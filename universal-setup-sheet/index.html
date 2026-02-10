@@ -1178,9 +1178,20 @@ function selectLine(i) {
   renderExplain(i);
   renderExtracted(i);
 
-  // Scroll into view
+  // Scroll active line within the listing container only (don't hijack page scroll)
   const lineEl = document.querySelectorAll('.gc-line')[i];
-  if (lineEl) lineEl.scrollIntoView({block:'nearest', behavior:'smooth'});
+  const listing = document.getElementById('gcodeListing');
+  if (lineEl && listing) {
+    const lineTop = lineEl.offsetTop;
+    const lineH = lineEl.offsetHeight;
+    const listH = listing.clientHeight;
+    const scrollTop = listing.scrollTop;
+    if (lineTop < scrollTop) {
+      listing.scrollTop = lineTop;
+    } else if (lineTop + lineH > scrollTop + listH) {
+      listing.scrollTop = lineTop + lineH - listH;
+    }
+  }
 }
 
 function renderState(changedKeys) {
