@@ -833,6 +833,22 @@ code {
   letter-spacing: 0.5px; color: var(--sp-accent);
 }
 .sp-depth { color: var(--sp-accent); }
+.sp-chevron {
+  color: var(--sp-muted); font-size: 0.8em;
+  text-align: center; width: 20px;
+  transition: transform 0.3s;
+}
+.sp-active .sp-chevron { transform: rotate(180deg); color: var(--sp-accent); }
+.sp-tap-hint {
+  margin-left: auto;
+  font-size: 0.6em; font-weight: 500;
+  text-transform: none; letter-spacing: 0.5px;
+  color: var(--sp-muted);
+  animation: hintPulse 2s ease infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.6; } 50% { opacity: 1; }
+}
 
 .sp-coolant {
   font-size: 0.68em; font-weight: 700;
@@ -1073,11 +1089,12 @@ code {
       <div class="sp-section-head">
         <span class="sp-section-num">1</span>
         <span>Toolpath Sequence</span>
+        <span class="sp-tap-hint">tap a row to view G-code</span>
       </div>
 
       <table class="sp-table">
         <thead>
-          <tr><th>T#</th><th>Description</th><th>Operation</th><th>RPM</th><th>Feed</th><th>Coolant</th><th>Min Z</th></tr>
+          <tr><th>T#</th><th>Description</th><th>Operation</th><th>RPM</th><th>Feed</th><th>Coolant</th><th>Min Z</th><th></th></tr>
         </thead>
         <tbody>
           <tr onclick="toggleGcodeRow(this)">
@@ -1088,8 +1105,9 @@ code {
             <td class="sp-mono">2,500</td>
             <td><span class="sp-coolant flood">Flood</span></td>
             <td class="sp-mono sp-depth">-0.5</td>
+            <td class="sp-chevron">&#9662;</td>
           </tr>
-          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( FACING )<br><span class="sp-gcode-highlight">N120 T1 M6</span><br>N140 S8000 M3<br>N150 G43 H1 Z50. M8<br>N160 G0 Z2.<br>N170 G1 Z-0.5 F200.<br><span class="sp-gcode-highlight">N180 G1 X100. Y50. F2500.</span></div></td></tr>
+          <tr class="sp-gcode-row"><td colspan="8"><div class="sp-gcode-expand">( FACING )<br><span class="sp-gcode-highlight">N120 T1 M6</span><br>N140 S8000 M3<br>N150 G43 H1 Z50. M8<br>N160 G0 Z2.<br>N170 G1 Z-0.5 F200.<br><span class="sp-gcode-highlight">N180 G1 X100. Y50. F2500.</span></div></td></tr>
           <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T2</td>
             <td>16mm 3-Flute Endmill</td>
@@ -1098,8 +1116,9 @@ code {
             <td class="sp-mono">1,200</td>
             <td><span class="sp-coolant flood">Flood</span></td>
             <td class="sp-mono sp-depth">-18.0</td>
+            <td class="sp-chevron">&#9662;</td>
           </tr>
-          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( POCKET )<br><span class="sp-gcode-highlight">N220 T2 M6</span><br>N230 S10000 M3<br>N240 G43 H2 Z50. M8<br>N260 G0 Z2.<br>N270 G1 Z-5. F300.<br><span class="sp-gcode-highlight">N280 G1 X60. Y30. F1200.</span></div></td></tr>
+          <tr class="sp-gcode-row"><td colspan="8"><div class="sp-gcode-expand">( POCKET )<br><span class="sp-gcode-highlight">N220 T2 M6</span><br>N230 S10000 M3<br>N240 G43 H2 Z50. M8<br>N260 G0 Z2.<br>N270 G1 Z-5. F300.<br><span class="sp-gcode-highlight">N280 G1 X60. Y30. F1200.</span></div></td></tr>
           <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T3</td>
             <td>10mm Ball Nose</td>
@@ -1108,8 +1127,9 @@ code {
             <td class="sp-mono">3,000</td>
             <td><span class="sp-coolant tsc">TSC</span></td>
             <td class="sp-mono sp-depth">-22.5</td>
+            <td class="sp-chevron">&#9662;</td>
           </tr>
-          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( FINISH PROFILE )<br><span class="sp-gcode-highlight">N340 T5 M6</span><br>N350 G0 G90 G55 X0. Y0.<br>N360 S12000 M3<br>N370 G43 H5 Z50. M88<br>N390 G1 Z-10. F100.<br><span class="sp-gcode-highlight">N400 G1 X80. Y40. F3000.</span></div></td></tr>
+          <tr class="sp-gcode-row"><td colspan="8"><div class="sp-gcode-expand">( FINISH PROFILE )<br><span class="sp-gcode-highlight">N340 T5 M6</span><br>N350 G0 G90 G55 X0. Y0.<br>N360 S12000 M3<br>N370 G43 H5 Z50. M88<br>N390 G1 Z-10. F100.<br><span class="sp-gcode-highlight">N400 G1 X80. Y40. F3000.</span></div></td></tr>
           <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T8</td>
             <td>8.5mm Carbide Drill</td>
@@ -1118,8 +1138,9 @@ code {
             <td class="sp-mono">320</td>
             <td><span class="sp-coolant tsc">TSC</span></td>
             <td class="sp-mono sp-depth">-25.0</td>
+            <td class="sp-chevron">&#9662;</td>
           </tr>
-          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N440 T8 M6</span><br>N450 S4200 M3<br>N460 G43 H8 Z50. M88<br><span class="sp-gcode-highlight">N470 G81 Z-25. R2. F320.</span><br>N480 X32. Y6.<br>N490 X38. Y6.<br>N500 X32. Y14.<br>N510 X38. Y14.<br>N520 G80</div></td></tr>
+          <tr class="sp-gcode-row"><td colspan="8"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N440 T8 M6</span><br>N450 S4200 M3<br>N460 G43 H8 Z50. M88<br><span class="sp-gcode-highlight">N470 G81 Z-25. R2. F320.</span><br>N480 X32. Y6.<br>N490 X38. Y6.<br>N500 X32. Y14.<br>N510 X38. Y14.<br>N520 G80</div></td></tr>
           <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T12</td>
             <td>M10x1.5 Spiral Tap</td>
@@ -1128,8 +1149,9 @@ code {
             <td class="sp-mono">1,200</td>
             <td><span class="sp-coolant mist">Mist</span></td>
             <td class="sp-mono sp-depth">-18.0</td>
+            <td class="sp-chevron">&#9662;</td>
           </tr>
-          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N540 T12 M6</span><br>N550 S800 M3<br>N560 G43 H12 Z50. M7<br><span class="sp-gcode-highlight">N570 G84 Z-18. R2. F1200.</span><br>N580 X32. Y6.<br>N590 X38. Y6.<br>N600 X32. Y14.<br>N610 X38. Y14.<br>N620 G80</div></td></tr>
+          <tr class="sp-gcode-row"><td colspan="8"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N540 T12 M6</span><br>N550 S800 M3<br>N560 G43 H12 Z50. M7<br><span class="sp-gcode-highlight">N570 G84 Z-18. R2. F1200.</span><br>N580 X32. Y6.<br>N590 X38. Y6.<br>N600 X32. Y14.<br>N610 X38. Y14.<br>N620 G80</div></td></tr>
         </tbody>
       </table>
 
