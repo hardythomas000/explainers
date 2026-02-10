@@ -826,21 +826,32 @@ code {
 
 .sp-images {
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 12px; padding: 12px 16px;
+  gap: 0; padding: 0;
   background: var(--sp-bg);
 }
-.sp-img-placeholder {
+.sp-fixture-img {
   aspect-ratio: 16/10;
-  border: 2px dashed var(--sp-border);
-  border-radius: 4px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 6px; color: var(--sp-muted);
+  border-right: 1px solid var(--sp-border);
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px;
+  background: var(--sp-bg);
 }
-.sp-img-placeholder svg { width: 28px; height: 28px; opacity: 0.3; }
-.sp-img-placeholder span {
-  font-size: 0.62em; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 1px; opacity: 0.4;
+.sp-3d-container {
+  aspect-ratio: 16/10;
+  position: relative;
+  background: #0a0c12;
+}
+#miniViewer3d {
+  width: 100%; height: 100%;
+  display: block; cursor: grab;
+}
+#miniViewer3d:active { cursor: grabbing; }
+.sp-3d-label {
+  position: absolute; bottom: 6px; right: 8px;
+  font-size: 0.55em; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,0.25);
+  pointer-events: none;
 }
 
 .sp-footer {
@@ -1103,13 +1114,64 @@ code {
         <span>Setup Images</span>
       </div>
       <div class="sp-images">
-        <div class="sp-img-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-          <span>Fixture photo</span>
+        <div class="sp-fixture-img">
+          <!-- SVG fixture illustration: part in vise with datum callout -->
+          <svg viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Table surface -->
+            <rect x="20" y="175" width="360" height="12" rx="2" fill="var(--sp-muted)" opacity="0.2"/>
+            <line x1="20" y1="175" x2="380" y2="175" stroke="var(--sp-border)" stroke-width="2"/>
+            <!-- Vise base -->
+            <rect x="60" y="148" width="280" height="27" rx="3" fill="var(--sp-muted)" opacity="0.25" stroke="var(--sp-border)" stroke-width="1"/>
+            <!-- Fixed jaw -->
+            <rect x="60" y="100" width="18" height="75" rx="2" fill="var(--sp-muted)" opacity="0.35" stroke="var(--sp-border)" stroke-width="1"/>
+            <!-- Movable jaw -->
+            <rect x="322" y="100" width="18" height="75" rx="2" fill="var(--sp-muted)" opacity="0.35" stroke="var(--sp-border)" stroke-width="1"/>
+            <!-- Jaw serrations -->
+            <line x1="64" y1="110" x2="64" y2="165" stroke="var(--sp-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <line x1="72" y1="110" x2="72" y2="165" stroke="var(--sp-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <line x1="328" y1="110" x2="328" y2="165" stroke="var(--sp-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <line x1="336" y1="110" x2="336" y2="165" stroke="var(--sp-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <!-- Stock block -->
+            <rect x="78" y="70" width="244" height="78" rx="2" fill="var(--sp-accent)" opacity="0.15" stroke="var(--sp-accent)" stroke-width="1.5"/>
+            <!-- Stock hatching -->
+            <line x1="90" y1="70" x2="78" y2="82" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="120" y1="70" x2="78" y2="112" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="150" y1="70" x2="78" y2="142" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="180" y1="70" x2="84" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="210" y1="70" x2="114" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="240" y1="70" x2="144" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="270" y1="70" x2="174" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="300" y1="70" x2="204" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="322" y1="78" x2="234" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="322" y1="108" x2="264" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <line x1="322" y1="138" x2="294" y2="148" stroke="var(--sp-accent)" stroke-width="0.4" opacity="0.3"/>
+            <!-- Pocket feature -->
+            <rect x="130" y="85" width="80" height="50" rx="2" fill="var(--sp-bg)" stroke="var(--sp-accent)" stroke-width="1" stroke-dasharray="4,2"/>
+            <!-- Drill holes -->
+            <circle cx="260" cy="95" r="5" fill="var(--sp-bg)" stroke="var(--sp-accent)" stroke-width="1"/>
+            <circle cx="290" cy="95" r="5" fill="var(--sp-bg)" stroke="var(--sp-accent)" stroke-width="1"/>
+            <circle cx="260" cy="125" r="5" fill="var(--sp-bg)" stroke="var(--sp-accent)" stroke-width="1"/>
+            <circle cx="290" cy="125" r="5" fill="var(--sp-bg)" stroke="var(--sp-accent)" stroke-width="1"/>
+            <!-- Datum origin (G54) -->
+            <circle cx="78" cy="70" r="4" fill="none" stroke="#ff5c5c" stroke-width="2"/>
+            <line x1="78" y1="70" x2="78" y2="42" stroke="#5cff5c" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <line x1="78" y1="70" x2="110" y2="70" stroke="#ff5c5c" stroke-width="1.5" marker-end="url(#arrowR)"/>
+            <!-- Datum label -->
+            <rect x="84" y="30" width="34" height="16" rx="3" fill="var(--sp-accent)" opacity="0.9"/>
+            <text x="101" y="42" text-anchor="middle" font-family="monospace" font-size="10" font-weight="bold" fill="white">G54</text>
+            <!-- Dimension lines -->
+            <line x1="78" y1="158" x2="322" y2="158" stroke="var(--sp-muted)" stroke-width="0.8" opacity="0.5"/>
+            <text x="200" y="168" text-anchor="middle" font-family="monospace" font-size="9" fill="var(--sp-muted)" opacity="0.7">244.0 mm</text>
+            <!-- Arrow markers -->
+            <defs>
+              <marker id="arrowR" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#ff5c5c"/></marker>
+              <marker id="arrowG" viewBox="0 0 6 6" refX="3" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,6 L3,0 L6,6" fill="#5cff5c"/></marker>
+            </defs>
+          </svg>
         </div>
-        <div class="sp-img-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-          <span>3D STEP viewer</span>
+        <div class="sp-3d-container">
+          <canvas id="miniViewer3d"></canvas>
+          <div class="sp-3d-label">Drag to orbit</div>
         </div>
       </div>
 
@@ -1869,6 +1931,150 @@ if (canvas) {
     renderer.setSize(w, h, false);
   });
   ro.observe(canvas);
+}
+
+// ─── MINI 3D VIEWER (in setup sheet preview) ───
+const miniCanvas = document.getElementById('miniViewer3d');
+if (miniCanvas) {
+  const mw = miniCanvas.clientWidth || 400;
+  const mh = miniCanvas.clientHeight || 250;
+
+  const mScene = new THREE.Scene();
+  mScene.background = new THREE.Color(0x0a0c12);
+
+  const mCamera = new THREE.PerspectiveCamera(30, mw / mh, 0.1, 500);
+  mCamera.position.set(90, 70, 100);
+
+  const mRenderer = new THREE.WebGLRenderer({ canvas: miniCanvas, antialias: true });
+  mRenderer.setSize(mw, mh);
+  mRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  mRenderer.shadowMap.enabled = true;
+
+  const mControls = new OrbitControls(mCamera, mRenderer.domElement);
+  mControls.enableDamping = true;
+  mControls.dampingFactor = 0.08;
+  mControls.target.set(20, 5, 10);
+  mControls.minDistance = 50;
+  mControls.maxDistance = 300;
+  mControls.enableZoom = true;
+  mControls.update();
+
+  // Lights
+  mScene.add(new THREE.AmbientLight(0x404060, 1.4));
+  const mDir = new THREE.DirectionalLight(0xffffff, 1.5);
+  mDir.position.set(60, 80, 50);
+  mDir.castShadow = true;
+  mScene.add(mDir);
+  mScene.add(new THREE.DirectionalLight(0x6c8aff, 0.3).translateX(-40));
+
+  // Grid
+  const mGrid = new THREE.GridHelper(150, 15, 0x1e2133, 0x13151e);
+  mGrid.position.y = -16;
+  mScene.add(mGrid);
+
+  // Vise
+  const mViseMat = new THREE.MeshStandardMaterial({ color: 0x3a3d4a, roughness: 0.7, metalness: 0.4 });
+  const mViseBase = new THREE.Mesh(new THREE.BoxGeometry(60, 9, 35), mViseMat);
+  mViseBase.position.set(20, -11.5, 10);
+  mViseBase.castShadow = true;
+  mScene.add(mViseBase);
+  const mFixedJaw = new THREE.Mesh(new THREE.BoxGeometry(60, 15, 4), mViseMat);
+  mFixedJaw.position.set(20, -3, -6);
+  mScene.add(mFixedJaw);
+  const mMoveJaw = new THREE.Mesh(new THREE.BoxGeometry(60, 15, 4), mViseMat);
+  mMoveJaw.position.set(20, -3, 26);
+  mScene.add(mMoveJaw);
+
+  // Stock (with pocket carved out via CSG-like approach — just overlay)
+  const mStockMat = new THREE.MeshStandardMaterial({ color: 0x6c8aff, roughness: 0.35, metalness: 0.5, transparent: true, opacity: 0.65 });
+  const mStock = new THREE.Mesh(new THREE.BoxGeometry(50, 15, 20), mStockMat);
+  mStock.position.set(20, 3.5, 10);
+  mStock.castShadow = true;
+  mScene.add(mStock);
+
+  // Stock wireframe
+  const mStockWire = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(50, 15, 20)),
+    new THREE.LineBasicMaterial({ color: 0x8ca8ff, transparent: true, opacity: 0.4 })
+  );
+  mStockWire.position.copy(mStock.position);
+  mScene.add(mStockWire);
+
+  // Pocket cavity
+  const mPocketMat = new THREE.MeshStandardMaterial({ color: 0x0a0c12, roughness: 0.8, metalness: 0.1 });
+  const mPocket = new THREE.Mesh(new THREE.BoxGeometry(20, 10, 12), mPocketMat);
+  mPocket.position.set(10, 6.5, 8);
+  mScene.add(mPocket);
+
+  // Drill holes (4 cylinders)
+  const mHoleMat = new THREE.MeshStandardMaterial({ color: 0x0a0c12, roughness: 0.9 });
+  const holeGeo = new THREE.CylinderGeometry(1.5, 1.5, 16, 12);
+  [[32, 6], [38, 6], [32, 14], [38, 14]].forEach(([x, z]) => {
+    const hole = new THREE.Mesh(holeGeo, mHoleMat);
+    hole.position.set(x, 4, z);
+    mScene.add(hole);
+  });
+
+  // Datum G54
+  const mDatumGroup = new THREE.Group();
+  mDatumGroup.position.set(-5, 11, 0);
+  const dLen = 12;
+  const dColors = [0xff5c5c, 0x5cff5c, 0x5c8aff];
+  const dDirs = [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)];
+  dDirs.forEach((dir, i) => {
+    mDatumGroup.add(new THREE.ArrowHelper(dir, new THREE.Vector3(0,0,0), dLen, dColors[i], 3, 2));
+  });
+  mDatumGroup.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.5, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0xffcb5c, emissive: 0xffcb5c, emissiveIntensity: 0.5 })
+  ));
+  // Label
+  const mLblCvs = document.createElement('canvas');
+  mLblCvs.width = 96; mLblCvs.height = 36;
+  const mLblCtx = mLblCvs.getContext('2d');
+  mLblCtx.fillStyle = '#ffcb5c';
+  mLblCtx.font = 'bold 24px monospace';
+  mLblCtx.textAlign = 'center';
+  mLblCtx.fillText('G54', 48, 26);
+  const mLblTex = new THREE.CanvasTexture(mLblCvs);
+  const mLblSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: mLblTex, transparent: true }));
+  mLblSprite.scale.set(12, 4.5, 1);
+  mLblSprite.position.set(0, 16, 0);
+  mDatumGroup.add(mLblSprite);
+  mScene.add(mDatumGroup);
+
+  // Slow auto-rotate
+  function mAnimate() {
+    requestAnimationFrame(mAnimate);
+    if (!mControls._isDragging) {
+      mDatumGroup.parent && (mScene.rotation.y += 0.002);
+    }
+    mControls.update();
+    mRenderer.render(mScene, mCamera);
+  }
+  // Auto-rotate the whole scene gently
+  let mAutoRotate = true;
+  mControls.addEventListener('start', () => { mAutoRotate = false; });
+
+  function mAnimLoop() {
+    requestAnimationFrame(mAnimLoop);
+    if (mAutoRotate) mScene.rotation.y += 0.003;
+    mControls.update();
+    mRenderer.render(mScene, mCamera);
+  }
+  mAnimLoop();
+
+  // Resize
+  const mRo = new ResizeObserver(() => {
+    const w = miniCanvas.clientWidth;
+    const h = miniCanvas.clientHeight;
+    if (w && h) {
+      mCamera.aspect = w / h;
+      mCamera.updateProjectionMatrix();
+      mRenderer.setSize(w, h, false);
+    }
+  });
+  mRo.observe(miniCanvas);
 }
 </script>
 </body>
