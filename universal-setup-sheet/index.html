@@ -344,17 +344,13 @@ body {
 
 /* G-code listing */
 .gcode-listing {
-  max-height: 500px;
-  overflow-y: auto;
+  max-height: 460px;
+  overflow-y: hidden;
   font-family: var(--mono);
   font-size: 0.82em;
   line-height: 1.8;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  touch-action: pan-y;
 }
-.gcode-listing::-webkit-scrollbar { width: 6px; }
-.gcode-listing::-webkit-scrollbar-track { background: transparent; }
-.gcode-listing::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .gc-line {
   display: flex; padding: 1px 20px;
