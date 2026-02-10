@@ -640,6 +640,47 @@ code {
   color: var(--accent);
 }
 
+/* ═══ 3D VIEWER ═══ */
+.viewer-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 40px 0;
+}
+.viewer-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--bg-interactive);
+  border-bottom: 1px solid var(--border);
+}
+.viewer-toolbar-title {
+  font-size: 0.78em; font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.viewer-controls { display: flex; gap: 6px; }
+.viewer-btn.active-view { background: var(--accent); color: white; border-color: var(--accent); }
+
+#viewer3d {
+  width: 100%; height: 420px;
+  display: block; cursor: grab;
+  background: #0a0c12;
+}
+#viewer3d:active { cursor: grabbing; }
+
+.viewer-legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.72em; color: var(--text-secondary);
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-swatch {
+  width: 10px; height: 10px; border-radius: 3px;
+  display: inline-block;
+}
+
 /* ═══ FOOTER ═══ */
 .footer {
   text-align: center; padding: 60px var(--gutter);
@@ -660,7 +701,8 @@ code {
   <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(2)"></button>
   <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(3)"></button>
   <button class="nav-dot" data-label="Feed Heuristic" onclick="scrollToChapter(4)"></button>
-  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(6)"></button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -674,9 +716,9 @@ code {
       <span class="hero-badge-dot"></span>
       C# &middot; .NET 8 &middot; WinForms &middot; ClosedXML
     </div>
-    <h1 class="reveal delay-1">Universal<br><span class="highlight">Setup Sheet</span></h1>
+    <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
-      Parses G-code programs and generates print-ready CNC setup sheets automatically. No more manual data entry.
+      Drop in any .nc file — Mastercam, Hypermill, hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent. Free.
     </p>
     <div class="hero-stats reveal delay-3">
       <div class="hero-stat">
@@ -884,11 +926,64 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 5: ARCHITECTURE
+     CHAPTER 5: 3D DATUM VIEW
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch5">
+  <div class="col-wide">
+    <div class="chapter-label reveal">05 — What's Next</div>
+    <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
+    <p class="lead reveal delay-2">
+      Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
+    </p>
+
+    <div class="callout reveal delay-3" style="border-left-color: var(--accent4);">
+      <strong>The idea:</strong> Parse work offsets (G54, G55, G59...) from the G-code, then render an interactive 3D view showing where each datum sits relative to the stock and fixturing. The machinist at the PC can orbit, zoom, and inspect — no more guessing from a cropped screenshot. Drag the view below.
+    </div>
+
+    <!-- 3D viewer -->
+    <div class="viewer-container reveal delay-3" id="viewerContainer">
+      <div class="viewer-toolbar">
+        <span class="viewer-toolbar-title">Interactive Setup View</span>
+        <div class="viewer-controls">
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="iso" onclick="setView('iso')">Iso</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="top" onclick="setView('top')">Top</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="front" onclick="setView('front')">Front</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="right" onclick="setView('right')">Right</button>
+        </div>
+      </div>
+      <canvas id="viewer3d"></canvas>
+      <div class="viewer-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#6c8aff"></span>Stock</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#4a4e5e"></span>Vise</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#ff5c5c"></span>X axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#5cff5c"></span>Y axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#5c8aff"></span>Z axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#ffcb5c"></span>G54</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#cb6cff"></span>G55</span>
+      </div>
+    </div>
+
+    <div class="concept-grid cols-2 reveal delay-4">
+      <div class="concept-card">
+        <div class="cc-icon" style="color:var(--accent2)">📸</div>
+        <h4>Screenshots Today</h4>
+        <p>Static, low-res, one angle. Can't rotate. Can't zoom in on a feature. Cropped wrong half the time. Different CAM systems paste differently. Some don't even include datum markers.</p>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon" style="color:var(--accent3)">🔄</div>
+        <h4>3D View Tomorrow</h4>
+        <p>Orbit and zoom. See every datum origin with its offset label. Stock dimensions visible. Fixture positions clear. Works on any PC with a browser — no CAM license needed for the machinist to inspect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     CHAPTER 6: ARCHITECTURE
+     ═══════════════════════════════════ -->
+<section class="chapter" id="ch6">
   <div class="col">
-    <div class="chapter-label reveal">05 — Architecture</div>
+    <div class="chapter-label reveal">06 — Architecture</div>
     <h2 class="reveal delay-1">Six files.<br>No abstractions.</h2>
     <p class="lead reveal delay-2">
       No interfaces. No inheritance hierarchies. No dependency injection. Just static methods, records, and one WinForms form. The kind of code you can understand in an afternoon.
@@ -1220,6 +1315,194 @@ chapters.forEach(ch => chapterObserver.observe(ch));
 // ═══ INIT ═══
 renderListing();
 resetExplorer();
+</script>
+
+<!-- Three.js for 3D datum viewer -->
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('viewer3d');
+if (canvas) {
+  const container = document.getElementById('viewerContainer');
+  const w = canvas.clientWidth || 800;
+  const h = canvas.clientHeight || 420;
+
+  // Scene
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0c12);
+  scene.fog = new THREE.Fog(0x0a0c12, 400, 800);
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 1000);
+  camera.position.set(180, 140, 200);
+
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.target.set(40, 10, 20);
+  controls.minDistance = 80;
+  controls.maxDistance = 500;
+  controls.update();
+
+  // Lights
+  const ambient = new THREE.AmbientLight(0x404060, 1.2);
+  scene.add(ambient);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+  dirLight.position.set(100, 150, 80);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.set(1024, 1024);
+  dirLight.shadow.camera.near = 10;
+  dirLight.shadow.camera.far = 400;
+  dirLight.shadow.camera.left = -150;
+  dirLight.shadow.camera.right = 150;
+  dirLight.shadow.camera.top = 150;
+  dirLight.shadow.camera.bottom = -150;
+  scene.add(dirLight);
+  const fillLight = new THREE.DirectionalLight(0x6c8aff, 0.3);
+  fillLight.position.set(-80, 40, -60);
+  scene.add(fillLight);
+
+  // Ground grid
+  const gridHelper = new THREE.GridHelper(300, 30, 0x1e2133, 0x13151e);
+  gridHelper.position.y = -30;
+  scene.add(gridHelper);
+
+  // ─── VISE (base + fixed jaw + movable jaw) ───
+  const viseMat = new THREE.MeshStandardMaterial({ color: 0x3a3d4a, roughness: 0.7, metalness: 0.4 });
+  // Base
+  const viseBase = new THREE.Mesh(new THREE.BoxGeometry(120, 18, 70), viseMat);
+  viseBase.position.set(40, -21, 20);
+  viseBase.castShadow = true; viseBase.receiveShadow = true;
+  scene.add(viseBase);
+  // Fixed jaw
+  const fixedJaw = new THREE.Mesh(new THREE.BoxGeometry(120, 30, 8), viseMat);
+  fixedJaw.position.set(40, -6, -11);
+  fixedJaw.castShadow = true;
+  scene.add(fixedJaw);
+  // Movable jaw
+  const moveJaw = new THREE.Mesh(new THREE.BoxGeometry(120, 30, 8), viseMat);
+  moveJaw.position.set(40, -6, 51);
+  moveJaw.castShadow = true;
+  scene.add(moveJaw);
+
+  // ─── STOCK BLOCK ───
+  const stockMat = new THREE.MeshStandardMaterial({ color: 0x6c8aff, roughness: 0.35, metalness: 0.5, transparent: true, opacity: 0.7 });
+  const stock = new THREE.Mesh(new THREE.BoxGeometry(100, 30, 40), stockMat);
+  stock.position.set(40, 6, 20);
+  stock.castShadow = true; stock.receiveShadow = true;
+  scene.add(stock);
+
+  // Stock wireframe
+  const stockWire = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(100, 30, 40)),
+    new THREE.LineBasicMaterial({ color: 0x8ca8ff, transparent: true, opacity: 0.5 })
+  );
+  stockWire.position.copy(stock.position);
+  scene.add(stockWire);
+
+  // ─── DATUM ARROW HELPER ───
+  function makeDatum(label, color, position) {
+    const group = new THREE.Group();
+    group.position.copy(position);
+
+    const len = 25;
+    const colors = [0xff5c5c, 0x5cff5c, 0x5c8aff]; // X, Y, Z
+    const dirs = [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)];
+    dirs.forEach((dir, i) => {
+      const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(0,0,0), len, colors[i], 5, 3);
+      group.add(arrow);
+    });
+
+    // Origin sphere
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(2.5, 16, 16),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5 })
+    );
+    group.add(sphere);
+
+    // Label sprite
+    const cvs = document.createElement('canvas');
+    cvs.width = 128; cvs.height = 48;
+    const ctx = cvs.getContext('2d');
+    ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
+    ctx.font = 'bold 32px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, 64, 34);
+    const tex = new THREE.CanvasTexture(cvs);
+    const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(24, 9, 1);
+    sprite.position.set(0, 30, 0);
+    group.add(sprite);
+
+    scene.add(group);
+    return group;
+  }
+
+  // G54 — top-left corner of stock (common datum placement)
+  const g54 = makeDatum('G54', 0xffcb5c, new THREE.Vector3(-10, 21, 0));
+
+  // G55 — opposite corner (for second op / flip)
+  const g55 = makeDatum('G55', 0xcb6cff, new THREE.Vector3(90, 21, 40));
+
+  // ─── CAMERA VIEWS ───
+  window.setView = function(view) {
+    document.querySelectorAll('.viewer-btn').forEach(b => b.classList.remove('active-view'));
+    document.querySelector(`.viewer-btn[data-view="${view}"]`)?.classList.add('active-view');
+
+    let pos, target = new THREE.Vector3(40, 10, 20);
+    switch(view) {
+      case 'top':   pos = new THREE.Vector3(40, 250, 20); break;
+      case 'front': pos = new THREE.Vector3(40, 30, 200); break;
+      case 'right': pos = new THREE.Vector3(250, 30, 20); break;
+      default:      pos = new THREE.Vector3(180, 140, 200); break;
+    }
+    // Animate
+    const start = camera.position.clone();
+    const startTarget = controls.target.clone();
+    let t = 0;
+    function animStep() {
+      t += 0.04;
+      if (t > 1) t = 1;
+      const ease = 1 - Math.pow(1 - t, 3); // ease out cubic
+      camera.position.lerpVectors(start, pos, ease);
+      controls.target.lerpVectors(startTarget, target, ease);
+      controls.update();
+      if (t < 1) requestAnimationFrame(animStep);
+    }
+    animStep();
+  };
+
+  // ─── ANIMATE ───
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // ─── RESIZE ───
+  const ro = new ResizeObserver(() => {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  });
+  ro.observe(canvas);
+}
 </script>
 </body>
 </html>
