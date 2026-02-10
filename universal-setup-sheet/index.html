@@ -640,6 +640,227 @@ code {
   color: var(--accent);
 }
 
+/* ═══ SHEET PREVIEW ═══ */
+.theme-switcher {
+  display: flex; gap: 8px; margin: 24px 0 20px; flex-wrap: wrap;
+}
+.theme-btn {
+  padding: 6px 18px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer; font-size: 0.78em; font-weight: 600;
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+.theme-btn.active-theme { background: var(--accent); color: white; border-color: var(--accent); }
+
+.sheet-preview {
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  transition: all 0.4s ease;
+  /* Default: workshop theme */
+  --sp-bg: #f4f2ed;
+  --sp-text: #0a0f1a;
+  --sp-muted: #7f8c8d;
+  --sp-header: #1a1f2e;
+  --sp-border: #d5d0c8;
+  --sp-row-alt: #eceae4;
+  --sp-accent: #c0392b;
+  --sp-section-bg: #e8e5dd;
+  --sp-footer: #1a1f2e;
+}
+.sheet-preview.blueprint {
+  --sp-bg: #0c1929;
+  --sp-text: #c8ddf0;
+  --sp-muted: #5a7a96;
+  --sp-header: #071220;
+  --sp-border: #1a3352;
+  --sp-row-alt: #0f1f35;
+  --sp-accent: #4a9eff;
+  --sp-section-bg: #0f1f35;
+  --sp-footer: #071220;
+}
+.sheet-preview.midnight {
+  --sp-bg: #13151e;
+  --sp-text: #e8eaf0;
+  --sp-muted: #4a4e5e;
+  --sp-header: #08090c;
+  --sp-border: #1e2133;
+  --sp-row-alt: #181b27;
+  --sp-accent: #ff7b5c;
+  --sp-section-bg: #181b27;
+  --sp-footer: #08090c;
+}
+.sheet-preview.clean {
+  --sp-bg: #ffffff;
+  --sp-text: #111827;
+  --sp-muted: #9ca3af;
+  --sp-header: #111827;
+  --sp-border: #e5e7eb;
+  --sp-row-alt: #f9fafb;
+  --sp-accent: #2563eb;
+  --sp-section-bg: #f3f4f6;
+  --sp-footer: #111827;
+}
+
+.sp-header {
+  background: var(--sp-header);
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0;
+}
+.sp-header-left { padding: 14px 20px; }
+.sp-header-center {
+  padding: 12px 24px; text-align: center;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.sp-header-right { padding: 14px 20px; text-align: right; }
+.sp-label {
+  font-size: 0.7em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: rgba(255,255,255,0.4);
+}
+.sp-part {
+  font-family: var(--mono); font-size: 1.6em;
+  font-weight: 800; letter-spacing: 1px;
+}
+.sp-machine-label {
+  font-size: 0.65em; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,0.35); margin-bottom: 2px;
+}
+.sp-machine { font-size: 0.95em; font-weight: 600; }
+.sp-rev {
+  display: inline-block;
+  background: var(--sp-accent); color: white;
+  font-family: var(--mono); font-weight: 700;
+  font-size: 1.1em; padding: 4px 14px;
+  border-radius: 4px; letter-spacing: 2px;
+}
+.sp-date {
+  font-family: var(--mono); font-size: 0.72em;
+  color: rgba(255,255,255,0.4); margin-top: 4px;
+}
+
+.sp-info-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--sp-bg);
+  border-bottom: 2px solid var(--sp-border);
+}
+.sp-info {
+  padding: 10px 16px;
+  border-right: 1px solid var(--sp-border);
+}
+.sp-info:last-child { border-right: none; }
+.sp-info-label {
+  font-size: 0.6em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--sp-muted); margin-bottom: 2px;
+}
+.sp-info-val {
+  font-size: 0.85em; font-weight: 600;
+  color: var(--sp-text);
+}
+
+.sp-section-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px;
+  background: var(--sp-section-bg);
+  border-bottom: 1px solid var(--sp-border);
+  border-top: 1px solid var(--sp-border);
+  font-size: 0.68em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--sp-text);
+}
+.sp-section-num {
+  font-family: var(--mono); font-size: 0.9em; font-weight: 700;
+  color: white; background: var(--sp-muted);
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px;
+}
+
+.sp-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--sp-bg);
+}
+.sp-table th {
+  padding: 7px 12px; text-align: left;
+  font-size: 0.6em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--sp-muted);
+  border-bottom: 2px solid var(--sp-border);
+  background: var(--sp-bg);
+}
+.sp-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sp-border);
+  color: var(--sp-text);
+}
+.sp-table tr:nth-child(even) td { background: var(--sp-row-alt); }
+.sp-mono { font-family: var(--mono); font-weight: 600; font-size: 0.92em; }
+.sp-bold { font-weight: 700; }
+.sp-op {
+  font-family: var(--mono); font-weight: 600;
+  font-size: 0.78em; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--sp-accent);
+}
+.sp-depth { color: var(--sp-accent); }
+
+.sp-coolant {
+  font-size: 0.68em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+.sp-coolant.flood { background: rgba(41,128,185,0.12); color: #2980b9; }
+.sp-coolant.tsc { background: rgba(39,174,96,0.12); color: #27ae60; }
+.sp-coolant.mist { background: rgba(212,160,23,0.12); color: #d4a017; }
+
+.sp-images {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 12px 16px;
+  background: var(--sp-bg);
+}
+.sp-img-placeholder {
+  aspect-ratio: 16/10;
+  border: 2px dashed var(--sp-border);
+  border-radius: 4px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; color: var(--sp-muted);
+}
+.sp-img-placeholder svg { width: 28px; height: 28px; opacity: 0.3; }
+.sp-img-placeholder span {
+  font-size: 0.62em; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px; opacity: 0.4;
+}
+
+.sp-footer {
+  display: flex; justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--sp-footer);
+  color: rgba(255,255,255,0.35);
+  font-family: var(--mono); font-size: 0.62em;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 640px) {
+  .sp-header { grid-template-columns: 1fr; text-align: center; }
+  .sp-header-left, .sp-header-right { padding: 8px 16px; text-align: center; }
+  .sp-header-center { border-left: none; border-right: none; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sp-info-row { grid-template-columns: 1fr 1fr; }
+  .sp-images { grid-template-columns: 1fr; }
+  .sp-table { font-size: 0.78em; }
+}
+
 /* ═══ 3D VIEWER ═══ */
 .viewer-container {
   background: var(--bg-surface);
@@ -698,11 +919,12 @@ code {
 <nav class="nav-dots" id="navDots">
   <button class="nav-dot active" data-label="Top" onclick="scrollToChapter(0)"></button>
   <button class="nav-dot" data-label="Problem" onclick="scrollToChapter(1)"></button>
-  <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(2)"></button>
-  <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(3)"></button>
-  <button class="nav-dot" data-label="Feed Heuristic" onclick="scrollToChapter(4)"></button>
-  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(5)"></button>
-  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(6)"></button>
+  <button class="nav-dot" data-label="The Output" onclick="scrollToChapter(2)"></button>
+  <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(3)"></button>
+  <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(4)"></button>
+  <button class="nav-dot" data-label="Feed Heuristic" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(6)"></button>
+  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(7)"></button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -776,11 +998,136 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 2: THE PIPELINE
+     CHAPTER 2: THE OUTPUT
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch2">
   <div class="col-wide">
-    <div class="chapter-label reveal">02 — Data Flow</div>
+    <div class="chapter-label reveal">02 — The Output</div>
+    <h2 class="reveal delay-1">This is what<br>you get</h2>
+    <p class="lead reveal delay-2">
+      A clean, interactive HTML page. Prints perfectly. Cycle through the themes below — the layout stays consistent, the look is yours to pick.
+    </p>
+
+    <!-- Theme switcher -->
+    <div class="theme-switcher reveal delay-3">
+      <button class="theme-btn active-theme" data-theme="workshop" onclick="setSheetTheme('workshop')">Workshop</button>
+      <button class="theme-btn" data-theme="blueprint" onclick="setSheetTheme('blueprint')">Blueprint</button>
+      <button class="theme-btn" data-theme="midnight" onclick="setSheetTheme('midnight')">Midnight</button>
+      <button class="theme-btn" data-theme="clean" onclick="setSheetTheme('clean')">Clean</button>
+    </div>
+
+    <!-- Mini setup sheet mockup (sanitized data) -->
+    <div class="sheet-preview reveal delay-3" id="sheetPreview">
+      <div class="sp-header" id="spHeader">
+        <div class="sp-header-left">
+          <div class="sp-label">Setup Sheet</div>
+          <div class="sp-part">EX-7042</div>
+        </div>
+        <div class="sp-header-center">
+          <div class="sp-machine-label">3-Axis Vertical</div>
+          <div class="sp-machine">Haas VF-4</div>
+        </div>
+        <div class="sp-header-right">
+          <div class="sp-rev">REV B</div>
+          <div class="sp-date">2026-02-10</div>
+        </div>
+      </div>
+
+      <div class="sp-info-row">
+        <div class="sp-info"><span class="sp-info-label">Material</span><span class="sp-info-val">6061-T6 Aluminium</span></div>
+        <div class="sp-info"><span class="sp-info-label">Programmer</span><span class="sp-info-val">H. Thomas</span></div>
+        <div class="sp-info"><span class="sp-info-label">Fixture</span><span class="sp-info-val">6" Kurt Vise</span></div>
+        <div class="sp-info"><span class="sp-info-label">Datum</span><span class="sp-info-val">G54 — Top left corner</span></div>
+      </div>
+
+      <div class="sp-section-head">
+        <span class="sp-section-num">1</span>
+        <span>Toolpath Sequence</span>
+      </div>
+
+      <table class="sp-table">
+        <thead>
+          <tr><th>T#</th><th>Description</th><th>Operation</th><th>RPM</th><th>Feed</th><th>Coolant</th><th>Min Z</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="sp-mono sp-bold">T1</td>
+            <td>63mm Face Mill</td>
+            <td class="sp-op">FACING</td>
+            <td class="sp-mono">8,000</td>
+            <td class="sp-mono">2,500</td>
+            <td><span class="sp-coolant flood">Flood</span></td>
+            <td class="sp-mono sp-depth">-0.5</td>
+          </tr>
+          <tr>
+            <td class="sp-mono sp-bold">T2</td>
+            <td>16mm 3-Flute Endmill</td>
+            <td class="sp-op">ROUGH POCKET</td>
+            <td class="sp-mono">10,000</td>
+            <td class="sp-mono">1,200</td>
+            <td><span class="sp-coolant flood">Flood</span></td>
+            <td class="sp-mono sp-depth">-18.0</td>
+          </tr>
+          <tr>
+            <td class="sp-mono sp-bold">T3</td>
+            <td>10mm Ball Nose</td>
+            <td class="sp-op">FINISH PROFILE</td>
+            <td class="sp-mono">12,000</td>
+            <td class="sp-mono">3,000</td>
+            <td><span class="sp-coolant tsc">TSC</span></td>
+            <td class="sp-mono sp-depth">-22.5</td>
+          </tr>
+          <tr>
+            <td class="sp-mono sp-bold">T8</td>
+            <td>8.5mm Carbide Drill</td>
+            <td class="sp-op">DRILL 4X</td>
+            <td class="sp-mono">4,200</td>
+            <td class="sp-mono">320</td>
+            <td><span class="sp-coolant tsc">TSC</span></td>
+            <td class="sp-mono sp-depth">-25.0</td>
+          </tr>
+          <tr>
+            <td class="sp-mono sp-bold">T12</td>
+            <td>M10x1.5 Spiral Tap</td>
+            <td class="sp-op">TAP 4X</td>
+            <td class="sp-mono">800</td>
+            <td class="sp-mono">1,200</td>
+            <td><span class="sp-coolant mist">Mist</span></td>
+            <td class="sp-mono sp-depth">-18.0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sp-section-head">
+        <span class="sp-section-num">2</span>
+        <span>Setup Images</span>
+      </div>
+      <div class="sp-images">
+        <div class="sp-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <span>Fixture photo</span>
+        </div>
+        <div class="sp-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>3D STEP viewer</span>
+        </div>
+      </div>
+
+      <div class="sp-footer" id="spFooter">
+        <span>H. Thomas</span>
+        <span>EX-7042 Rev B</span>
+        <span>Page 1 of 1</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     CHAPTER 3: THE PIPELINE
+     ═══════════════════════════════════ -->
+<section class="chapter" id="ch3">
+  <div class="col-wide">
+    <div class="chapter-label reveal">03 — Data Flow</div>
     <h2 class="reveal delay-1">From G-code<br>to setup sheet</h2>
     <p class="lead reveal delay-2">
       Three stages. Two inputs. One output.
@@ -823,7 +1170,7 @@ code {
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch3">
   <div class="col-wide">
-    <div class="chapter-label reveal">03 — The Parser</div>
+    <div class="chapter-label reveal">04 — The Parser</div>
     <h2 class="reveal delay-1">Step through<br>actual G-code</h2>
     <p class="lead reveal delay-2">
       Click any line to see what the parser does. Watch state accumulate across tool blocks. See exactly when data gets captured — and when it's intentionally skipped.
@@ -886,7 +1233,7 @@ code {
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch4">
   <div class="col">
-    <div class="chapter-label reveal">04 — The Feed Heuristic</div>
+    <div class="chapter-label reveal">05 — The Feed Heuristic</div>
     <h2 class="reveal delay-1">Not all F-words<br>are equal</h2>
     <p class="lead reveal delay-2">
       G-code has one <code>F</code> word for feed rate — but it means different things depending on context. A plunge feed (Z-only) is much slower than a lateral cutting feed (X/Y). Setup sheets need the cutting feed. The parser uses a simple heuristic to tell them apart.
@@ -930,7 +1277,7 @@ code {
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch5">
   <div class="col-wide">
-    <div class="chapter-label reveal">05 — What's Next</div>
+    <div class="chapter-label reveal">06 — What's Next</div>
     <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
     <p class="lead reveal delay-2">
       Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
@@ -983,7 +1330,7 @@ code {
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch6">
   <div class="col">
-    <div class="chapter-label reveal">06 — Architecture</div>
+    <div class="chapter-label reveal">07 — Architecture</div>
     <h2 class="reveal delay-1">Six files.<br>No abstractions.</h2>
     <p class="lead reveal delay-2">
       No interfaces. No inheritance hierarchies. No dependency injection. Just static methods, records, and one WinForms form. The kind of code you can understand in an afternoon.
@@ -1322,6 +1669,15 @@ const chapterObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 
 chapters.forEach(ch => chapterObserver.observe(ch));
+
+// ═══ SHEET THEME SWITCHER ═══
+function setSheetTheme(theme) {
+  const preview = document.getElementById('sheetPreview');
+  preview.classList.remove('workshop', 'blueprint', 'midnight', 'clean');
+  if (theme !== 'workshop') preview.classList.add(theme);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active-theme'));
+  document.querySelector(`.theme-btn[data-theme="${theme}"]`)?.classList.add('active-theme');
+}
 
 // ═══ INIT ═══
 renderListing();
