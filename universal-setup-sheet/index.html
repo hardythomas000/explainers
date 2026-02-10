@@ -887,7 +887,7 @@ code {
   <div class="hero-content">
     <div class="hero-badge reveal">
       <span class="hero-badge-dot"></span>
-      An explainer &middot; how the project works under the hood
+      Universal Setup Sheet Generator &middot; Explainer
     </div>
     <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
@@ -1633,6 +1633,15 @@ chapters.forEach(ch => chapterObserver.observe(ch));
 
 // ═══ SHEET THEME SWITCHER ═══
 const themeBgColors = { workshop: '#f4f2ed', blueprint: '#0c1929', midnight: '#13151e', clean: '#ffffff' };
+const themeGridColors = {
+  workshop: ['#d5d0c8', '#e8e5dd', 0.4],
+  blueprint: ['#1a3352', '#0f1f35', 0.5],
+  midnight: ['#1e2133', '#13151e', 0.5],
+  clean: ['#e5e7eb', '#f3f4f6', 0.3]
+};
+const themeViseColors = {
+  workshop: '#5c6370', blueprint: '#3a5070', midnight: '#4a4e5e', clean: '#6b7280'
+};
 function setSheetTheme(theme) {
   const preview = document.getElementById('sheetPreview');
   preview.classList.remove('workshop', 'blueprint', 'midnight', 'clean');
@@ -1644,6 +1653,11 @@ function setSheetTheme(theme) {
     window._miniScene.background.set(c);
     if (window._miniPocketMat) window._miniPocketMat.color.set(c);
     if (window._miniHoleMat) window._miniHoleMat.color.set(c);
+    if (window._miniGrid) {
+      const g = themeGridColors[theme] || themeGridColors.workshop;
+      window._miniGrid.material.opacity = g[2];
+    }
+    if (window._miniViseMat) window._miniViseMat.color.set(themeViseColors[theme] || '#5c6370');
   }
 }
 
@@ -1715,7 +1729,7 @@ if (canvas) {
   scene.add(gridHelper);
 
   // ─── VISE (base + fixed jaw + movable jaw) ───
-  const viseMat = new THREE.MeshStandardMaterial({ color: 0x3a3d4a, roughness: 0.7, metalness: 0.4 });
+  const viseMat = new THREE.MeshStandardMaterial({ color: 0x5c6370, roughness: 0.6, metalness: 0.6 });
   // Base
   const viseBase = new THREE.Mesh(new THREE.BoxGeometry(120, 18, 70), viseMat);
   viseBase.position.set(40, -21, 20);
@@ -1733,7 +1747,7 @@ if (canvas) {
   scene.add(moveJaw);
 
   // ─── STOCK BLOCK ───
-  const stockMat = new THREE.MeshStandardMaterial({ color: 0x6c8aff, roughness: 0.35, metalness: 0.5, transparent: true, opacity: 0.7 });
+  const stockMat = new THREE.MeshStandardMaterial({ color: 0x7aa2f7, roughness: 0.3, metalness: 0.4, transparent: true, opacity: 0.7 });
   const stock = new THREE.Mesh(new THREE.BoxGeometry(100, 30, 40), stockMat);
   stock.position.set(40, 6, 20);
   stock.castShadow = true; stock.receiveShadow = true;
@@ -1875,12 +1889,16 @@ if (miniCanvas) {
   mScene.add(new THREE.DirectionalLight(0x6c8aff, 0.3).translateX(-40));
 
   // Grid
-  const mGrid = new THREE.GridHelper(150, 15, 0x1e2133, 0x13151e);
+  const mGrid = new THREE.GridHelper(150, 15, 0xd5d0c8, 0xe8e5dd);
+  mGrid.material.opacity = 0.4;
+  mGrid.material.transparent = true;
   mGrid.position.y = -16;
   mScene.add(mGrid);
+  window._miniGrid = mGrid;
 
-  // Vise
-  const mViseMat = new THREE.MeshStandardMaterial({ color: 0x3a3d4a, roughness: 0.7, metalness: 0.4 });
+  // Vise — gunmetal grey, clearly distinct from stock
+  const mViseMat = new THREE.MeshStandardMaterial({ color: 0x5c6370, roughness: 0.6, metalness: 0.6 });
+  window._miniViseMat = mViseMat;
   const mViseBase = new THREE.Mesh(new THREE.BoxGeometry(60, 9, 35), mViseMat);
   mViseBase.position.set(20, -11.5, 10);
   mViseBase.castShadow = true;
@@ -1892,8 +1910,8 @@ if (miniCanvas) {
   mMoveJaw.position.set(20, -3, 26);
   mScene.add(mMoveJaw);
 
-  // Stock (with pocket carved out via CSG-like approach — just overlay)
-  const mStockMat = new THREE.MeshStandardMaterial({ color: 0x6c8aff, roughness: 0.35, metalness: 0.5, transparent: true, opacity: 0.65 });
+  // Stock — aluminium blue, semi-transparent, clearly distinct from vise
+  const mStockMat = new THREE.MeshStandardMaterial({ color: 0x7aa2f7, roughness: 0.3, metalness: 0.4, transparent: true, opacity: 0.7 });
   const mStock = new THREE.Mesh(new THREE.BoxGeometry(50, 15, 20), mStockMat);
   mStock.position.set(20, 3.5, 10);
   mStock.castShadow = true;
