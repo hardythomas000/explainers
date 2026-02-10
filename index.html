@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explainers — Hardy Thomas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #08090c;
+  --bg-surface: #13151e;
+  --bg-interactive: #181b27;
+  --text: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-dim: #4a4e5e;
+  --border: #1e2133;
+  --accent: #6c8aff;
+  --accent-glow: rgba(108, 138, 255, 0.15);
+  --font: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.hero-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(108, 138, 255, 0.06) 0%, transparent 70%);
+}
+
+.hero-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(30,33,51,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,33,51,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  opacity: 0.4;
+}
+
+.content { position: relative; z-index: 1; max-width: 640px; width: 100%; }
+
+h1 {
+  font-size: clamp(2em, 6vw, 3.2em);
+  font-weight: 900; letter-spacing: -0.04em;
+  line-height: 1.1; margin-bottom: 12px;
+  text-align: center;
+}
+h1 .accent {
+  background: linear-gradient(135deg, var(--accent) 0%, #cb6cff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  text-align: center; color: var(--text-secondary);
+  font-size: 1.05em; margin-bottom: 48px;
+  line-height: 1.6;
+}
+
+.projects { display: flex; flex-direction: column; gap: 16px; }
+
+.project-card {
+  display: block;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.project-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(108, 138, 255, 0.1);
+}
+.project-card::after {
+  content: '→';
+  position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+  font-size: 1.3em; color: var(--text-dim);
+  transition: all 0.3s;
+}
+.project-card:hover::after { color: var(--accent); right: 20px; }
+
+.project-card .badge {
+  display: inline-block;
+  font-size: 0.62em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--accent); margin-bottom: 8px;
+}
+.project-card h2 {
+  font-size: 1.25em; font-weight: 700; margin-bottom: 6px;
+}
+.project-card p {
+  font-size: 0.88em; color: var(--text-secondary); line-height: 1.5;
+  max-width: 480px;
+}
+.project-card .tags {
+  display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
+}
+.project-card .tag {
+  font-size: 0.65em; font-weight: 600;
+  padding: 3px 10px; border-radius: 6px;
+  background: var(--bg-interactive);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+.footer {
+  margin-top: 48px; text-align: center;
+  color: var(--text-dim); font-size: 0.75em;
+}
+.footer a { color: var(--text-secondary); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.content { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.project-card:nth-child(1) { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+.project-card:nth-child(2) { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+.project-card:nth-child(3) { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+</style>
+</head>
+<body>
+
+<div class="hero-bg"></div>
+<div class="hero-grid"></div>
+
+<div class="content">
+  <h1>Project <span class="accent">Explainers</span></h1>
+  <p class="subtitle">Interactive deep-dives into how things work.<br>Built with Claude.</p>
+
+  <div class="projects">
+    <a href="universal-setup-sheet/" class="project-card">
+      <span class="badge">CNC Tooling</span>
+      <h2>Universal Setup Sheet</h2>
+      <p>Parses G-code to auto-generate print-ready CNC setup sheets. Step through the parser line-by-line and watch state accumulate.</p>
+      <div class="tags">
+        <span class="tag">C#</span>
+        <span class="tag">.NET 8</span>
+        <span class="tag">G-code Parser</span>
+        <span class="tag">ClosedXML</span>
+      </div>
+    </a>
+
+    <!-- Future explainers go here -->
+    <!--
+    <a href="frame-generator/" class="project-card">
+      <span class="badge">CAM</span>
+      <h2>Frame Generator</h2>
+      <p>Generates CNC workholding frames and tabs for 5-axis thin-wall parts.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">build123d</span>
+        <span class="tag">Three.js</span>
+      </div>
+    </a>
+    -->
+  </div>
+
+  <div class="footer">
+    Hardy Thomas &middot; <a href="https://github.com/hardythomas000">GitHub</a>
+  </div>
+</div>
+
+</body>
+</html>
