@@ -540,62 +540,6 @@ body {
 .concept-card h4 { font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
 .concept-card p { font-size: 0.82em; color: var(--text-secondary); line-height: 1.5; }
 
-/* ═══ FEED HEURISTIC VISUAL ═══ */
-.heuristic-demo {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 16px; overflow: hidden;
-  margin: 40px 0;
-}
-.heuristic-header {
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-  font-size: 0.68em; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--text-dim);
-}
-.heuristic-header::before {
-  content: ''; width: 3px; height: 12px;
-  background: var(--accent3); border-radius: 2px;
-}
-
-.heuristic-body { padding: 24px; }
-
-.heuristic-lines { display: flex; flex-direction: column; gap: 4px; }
-.h-line {
-  font-family: var(--mono); font-size: 0.82em;
-  padding: 8px 14px; border-radius: 8px;
-  display: flex; align-items: center; gap: 12px;
-  transition: all 0.3s;
-}
-.h-line .h-code { flex: 1; }
-.h-line .h-verdict {
-  font-family: var(--font); font-size: 0.8em;
-  font-weight: 600; white-space: nowrap;
-}
-.h-line.skip {
-  background: rgba(255, 100, 80, 0.06);
-  border: 1px solid rgba(255, 100, 80, 0.12);
-}
-.h-line.skip .h-verdict { color: var(--accent2); }
-.h-line.skip .h-code { color: var(--text-secondary); }
-.h-line.capture {
-  background: rgba(92, 255, 160, 0.06);
-  border: 1px solid rgba(92, 255, 160, 0.12);
-}
-.h-line.capture .h-verdict { color: var(--accent3); }
-.h-line.capture .h-code { color: var(--text); }
-
-.heuristic-explain {
-  margin-top: 16px; padding: 14px;
-  background: rgba(108, 138, 255, 0.05);
-  border-radius: 10px;
-  font-size: 0.85em; color: var(--text-secondary);
-  line-height: 1.6;
-}
-.heuristic-explain strong { color: var(--text); }
-
 /* ═══ ARCHITECTURE VISUAL ═══ */
 .arch-tree {
   font-family: var(--mono); font-size: 0.82em;
@@ -835,7 +779,7 @@ code {
 .sp-3d-container {
   aspect-ratio: 16/10;
   position: relative;
-  background: #0a0c12;
+  background: var(--sp-bg);
 }
 #miniViewer3d {
   width: 100%; height: 100%;
@@ -846,7 +790,8 @@ code {
   position: absolute; bottom: 6px; right: 8px;
   font-size: 0.55em; font-weight: 600;
   text-transform: uppercase; letter-spacing: 1px;
-  color: rgba(255,255,255,0.25);
+  color: var(--sp-muted);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -1687,12 +1632,19 @@ const chapterObserver = new IntersectionObserver((entries) => {
 chapters.forEach(ch => chapterObserver.observe(ch));
 
 // ═══ SHEET THEME SWITCHER ═══
+const themeBgColors = { workshop: '#f4f2ed', blueprint: '#0c1929', midnight: '#13151e', clean: '#ffffff' };
 function setSheetTheme(theme) {
   const preview = document.getElementById('sheetPreview');
   preview.classList.remove('workshop', 'blueprint', 'midnight', 'clean');
   if (theme !== 'workshop') preview.classList.add(theme);
   document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active-theme'));
   document.querySelector(`.theme-btn[data-theme="${theme}"]`)?.classList.add('active-theme');
+  if (window._miniScene) {
+    const c = themeBgColors[theme] || '#f4f2ed';
+    window._miniScene.background.set(c);
+    if (window._miniPocketMat) window._miniPocketMat.color.set(c);
+    if (window._miniHoleMat) window._miniHoleMat.color.set(c);
+  }
 }
 
 // ═══ INIT ═══
@@ -1894,7 +1846,8 @@ if (miniCanvas) {
   const mh = miniCanvas.clientHeight || 250;
 
   const mScene = new THREE.Scene();
-  mScene.background = new THREE.Color(0x0a0c12);
+  mScene.background = new THREE.Color(0xf4f2ed);
+  window._miniScene = mScene;
 
   const mCamera = new THREE.PerspectiveCamera(30, mw / mh, 0.1, 500);
   mCamera.position.set(90, 70, 100);
@@ -1954,14 +1907,16 @@ if (miniCanvas) {
   mStockWire.position.copy(mStock.position);
   mScene.add(mStockWire);
 
-  // Pocket cavity
-  const mPocketMat = new THREE.MeshStandardMaterial({ color: 0x0a0c12, roughness: 0.8, metalness: 0.1 });
+  // Pocket cavity (color matches scene background to simulate cut-away)
+  const mPocketMat = new THREE.MeshStandardMaterial({ color: 0xf4f2ed, roughness: 0.8, metalness: 0.1 });
+  window._miniPocketMat = mPocketMat;
   const mPocket = new THREE.Mesh(new THREE.BoxGeometry(20, 10, 12), mPocketMat);
   mPocket.position.set(10, 6.5, 8);
   mScene.add(mPocket);
 
   // Drill holes (4 cylinders)
-  const mHoleMat = new THREE.MeshStandardMaterial({ color: 0x0a0c12, roughness: 0.9 });
+  const mHoleMat = new THREE.MeshStandardMaterial({ color: 0xf4f2ed, roughness: 0.9 });
+  window._miniHoleMat = mHoleMat;
   const holeGeo = new THREE.CylinderGeometry(1.5, 1.5, 16, 12);
   [[32, 6], [38, 6], [32, 14], [38, 14]].forEach(([x, z]) => {
     const hole = new THREE.Mesh(holeGeo, mHoleMat);
