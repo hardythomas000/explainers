@@ -768,7 +768,7 @@ code {
       <div class="compare-card good">
         <div class="badge">This Tool</div>
         <h3>Regenerate in Seconds</h3>
-        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Same clean output every time. Merges your tool library. Consistent, customizable, print-ready. And it's free.</p>
+        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Outputs an interactive HTML page — editable cells, NC code preview, even a 3D STEP viewer. Merges your tool library. Prints clean. And it's free.</p>
         <div class="time">&lt; 3 sec to regenerate</div>
       </div>
     </div>
@@ -807,8 +807,8 @@ code {
       <div class="pipe-arrow">→</div>
       <div class="pipe-stage">
         <span class="icon">📊</span>
-        <h4>.xlsx Output</h4>
-        <p>Print-ready Excel with header, toolpaths, tool list, and images</p>
+        <h4>HTML Output</h4>
+        <p>Interactive, print-ready setup sheet with editable cells, NC preview, and 3D viewer</p>
       </div>
     </div>
 
@@ -1013,9 +1013,9 @@ code {
       </div>
       <div class="arch-file">
         <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">ExcelSetupSheetGenerator.cs</span>
+        <span class="af-name">HtmlSetupSheetGenerator.cs</span>
         <span class="af-lines">~400 lines</span>
-        <span class="af-desc">ClosedXML output. Sections, images, print layout.</span>
+        <span class="af-desc">HTML output. Interactive, printable, 3D-ready.</span>
       </div>
       <div class="arch-file">
         <span class="af-tree">&nbsp;&nbsp;├─</span>
@@ -1042,14 +1042,14 @@ code {
       </div>
       <div class="concept-card">
         <h4>Dictionary Merge</h4>
-        <p>Tool library data merges inside the Excel generator via dictionary lookup. No separate merge layer. Optional by design.</p>
+        <p>Tool library data merges inside the HTML generator via dictionary lookup. No separate merge layer. Optional by design.</p>
       </div>
     </div>
   </div>
 </section>
 
 <footer class="footer">
-  <p>Built by Hardy Thomas with <a href="https://claude.ai/claude-code">Claude Code</a> &middot; C# / .NET 8 / ClosedXML</p>
+  <p>Built by Hardy Thomas with <a href="https://claude.ai/claude-code">Claude Code</a></p>
 </footer>
 
 <script>
