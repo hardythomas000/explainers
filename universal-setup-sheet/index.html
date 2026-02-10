@@ -627,28 +627,6 @@ body {
   display: flex; gap: 8px; margin-top: 16px;
 }
 
-/* ═══ ARCHITECTURE VISUAL ═══ */
-.arch-tree {
-  font-family: var(--mono); font-size: 0.82em;
-  line-height: 2; margin: 32px 0;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-}
-.arch-file {
-  display: flex; gap: 12px; align-items: baseline;
-  padding: 2px 0;
-}
-.arch-file .af-tree { color: var(--text-dim); user-select: none; }
-.arch-file .af-name { color: var(--accent); font-weight: 600; }
-.arch-file .af-desc { color: var(--text-dim); font-family: var(--font); font-size: 0.9em; }
-.arch-file .af-lines {
-  font-family: var(--font); font-size: 0.78em;
-  color: var(--text-dim); background: var(--bg-interactive);
-  padding: 1px 8px; border-radius: 4px;
-}
-
 /* ═══ CALLOUT ═══ */
 .callout {
   margin: 32px 0; padding: 20px 24px;
@@ -977,7 +955,6 @@ code {
   <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(3)"></button>
   <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(4)"></button>
   <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(5)"></button>
-  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(6)"></button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -1420,76 +1397,6 @@ code {
           <tr><td colspan="8" class="empty">Tap a line above to begin</td></tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════
-     CHAPTER 6: ARCHITECTURE
-     ═══════════════════════════════════ -->
-<section class="chapter" id="ch6">
-  <div class="col">
-    <div class="chapter-label reveal">06 — Architecture</div>
-    <h2 class="reveal delay-1">Six files.<br>No abstractions.</h2>
-    <p class="lead reveal delay-2">
-      No interfaces. No inheritance hierarchies. No dependency injection. Just static methods, records, and one WinForms form. The kind of code you can understand in an afternoon.
-    </p>
-
-    <div class="arch-tree reveal delay-3">
-      <div class="arch-file">
-        <span class="af-tree">src/</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">Models.cs</span>
-        <span class="af-lines">~85 lines</span>
-        <span class="af-desc">Records + enums. All data shapes.</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">GCodeParser.cs</span>
-        <span class="af-lines">~500 lines</span>
-        <span class="af-desc">Two-phase parser. The brain.</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">ToolLibraryImporter.cs</span>
-        <span class="af-lines">~120 lines</span>
-        <span class="af-desc">Multi-library loader + auto-matcher.</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">HtmlSetupSheetGenerator.cs</span>
-        <span class="af-lines">~400 lines</span>
-        <span class="af-desc">HTML output. Interactive, printable, 3D-ready.</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;├─</span>
-        <span class="af-name">MainForm.cs</span>
-        <span class="af-lines">~300 lines</span>
-        <span class="af-desc">WinForms GUI. File pickers, auto-detect.</span>
-      </div>
-      <div class="arch-file">
-        <span class="af-tree">&nbsp;&nbsp;└─</span>
-        <span class="af-name">Program.cs</span>
-        <span class="af-lines">~12 lines</span>
-        <span class="af-desc">Entry point. That's it.</span>
-      </div>
-    </div>
-
-    <div class="concept-grid cols-3 reveal delay-4">
-      <div class="concept-card">
-        <h4>No Inheritance</h4>
-        <p>G-code dialects differ only in comments. A single <code>switch</code> on <code>CommentStyle</code> handles it — not a class hierarchy.</p>
-      </div>
-      <div class="concept-card">
-        <h4>Records, Not Classes</h4>
-        <p>C# records for immutable data. <code>ParsedToolChange</code>, <code>ToolLibraryEntry</code>, <code>MachineConfig</code> — value semantics, no mutation bugs.</p>
-      </div>
-      <div class="concept-card">
-        <h4>Library Auto-Match</h4>
-        <p>G-code identifies the machine → tool picks the right library from your collection → merges via dictionary lookup. Optional by design.</p>
-      </div>
     </div>
   </div>
 </section>
