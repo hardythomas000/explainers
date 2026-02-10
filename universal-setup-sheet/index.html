@@ -713,20 +713,20 @@ code {
     <div class="chapter-label reveal">01 — The Problem</div>
     <h2 class="reveal delay-1">Every job needs<br>a setup sheet</h2>
     <p class="lead reveal delay-2">
-      CNC programmers create a setup sheet for every part — listing tools, speeds, feeds, offsets, and workholding. This data already exists inside the G-code file. But every shop copies it out by hand.
+      Every CNC job needs a setup sheet — tools, speeds, feeds, offsets, workholding. Most CAM software can export one, but they look like Windows 95 clip art and only work for that one system. Run multiple CAM packages across different machine brands? Now you're hand-editing every sheet to match.
     </p>
 
     <div class="comparison reveal delay-3">
       <div class="compare-card bad">
-        <div class="badge">Before</div>
-        <h3>Manual Entry</h3>
-        <p>Open G-code in a text editor. Find each tool change. Transcribe tool number, RPM, feed, coolant, offsets into a spreadsheet. Repeat for every tool. Pray you don't make a typo.</p>
-        <div class="time">20–30 min</div>
+        <div class="badge">The Status Quo</div>
+        <h3>CAM Exports + Manual Editing</h3>
+        <p>Your CAM software spits out a basic setup sheet — but it looks like Excel 2000 and only covers that one post. Different CAM system? Different machine brand? Now you're manually editing and reformatting each sheet. Across a busy shop with Mastercam, Hypermill, Haas, and Mazak, the editing adds up fast. The automated alternatives from private resellers? Thousands of dollars.</p>
+        <div class="time">10–30 min editing</div>
       </div>
       <div class="compare-card good">
-        <div class="badge">After</div>
-        <h3>One Click</h3>
-        <p>Drop your .nc files in. Click Generate. Get a formatted Excel sheet with every tool, every speed, every feed — extracted directly from the program. Zero transcription errors.</p>
+        <div class="badge">This Tool</div>
+        <h3>One Format, Any Source</h3>
+        <p>Reads the G-code directly — doesn't matter which CAM system generated it. Mastercam, Hypermill, hand-written — same clean output. Merges your tool library. Consistent, print-ready Excel every time. Free.</p>
         <div class="time">&lt; 3 sec</div>
       </div>
     </div>
