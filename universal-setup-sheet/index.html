@@ -540,6 +540,93 @@ body {
 .concept-card h4 { font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
 .concept-card p { font-size: 0.82em; color: var(--text-secondary); line-height: 1.5; }
 
+/* ═══ TOOL LIBRARY MATCHER ═══ */
+.lib-matcher {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  margin: 40px 0;
+}
+.lib-matcher-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.68em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-dim);
+}
+.lib-matcher-header::before {
+  content: ''; width: 3px; height: 12px;
+  background: var(--accent4); border-radius: 2px;
+}
+.lib-matcher-body { padding: 24px; }
+.lib-matcher-row {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 20px; align-items: start;
+}
+@media (max-width: 640px) {
+  .lib-matcher-row { grid-template-columns: 1fr; }
+  .lib-matcher-arrow { transform: rotate(90deg); }
+}
+.lib-gcode-box {
+  background: var(--bg-interactive);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+  font-family: var(--mono); font-size: 0.78em;
+  line-height: 1.8;
+}
+.lib-gcode-box .lib-clue {
+  background: rgba(255, 203, 92, 0.12);
+  border: 1px solid rgba(255, 203, 92, 0.3);
+  border-radius: 4px; padding: 0 4px;
+  color: var(--accent4); font-weight: 600;
+  transition: all 0.4s;
+}
+.lib-gcode-box .lib-clue.active {
+  background: rgba(255, 203, 92, 0.25);
+  box-shadow: 0 0 8px rgba(255, 203, 92, 0.2);
+}
+.lib-matcher-arrow {
+  font-size: 1.4em; color: var(--text-dim);
+  align-self: center; text-align: center;
+  padding-top: 20px;
+}
+.lib-matcher-arrow.matched { color: var(--accent3); }
+.lib-cards { display: flex; flex-direction: column; gap: 8px; }
+.lib-card {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-interactive);
+  transition: all 0.4s;
+  font-size: 0.82em;
+}
+.lib-card-name { font-weight: 700; margin-bottom: 2px; }
+.lib-card-detail { font-size: 0.85em; color: var(--text-secondary); }
+.lib-card.matched {
+  border-color: var(--accent3);
+  background: rgba(92, 255, 160, 0.06);
+  box-shadow: 0 0 12px rgba(92, 255, 160, 0.1);
+}
+.lib-card.dimmed { opacity: 0.35; }
+.lib-match-tag {
+  display: inline-block; font-size: 0.7em; font-weight: 700;
+  color: var(--accent3); margin-left: 8px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.lib-matcher-explain {
+  margin-top: 16px; padding: 14px;
+  background: rgba(108, 138, 255, 0.05);
+  border-radius: 10px;
+  font-size: 0.85em; color: var(--text-secondary);
+  line-height: 1.6;
+  min-height: 44px;
+}
+.lib-matcher-explain strong { color: var(--text); }
+.lib-matcher-controls {
+  display: flex; gap: 8px; margin-top: 16px;
+}
+
 /* ═══ ARCHITECTURE VISUAL ═══ */
 .arch-tree {
   font-family: var(--mono); font-size: 0.82em;
@@ -941,7 +1028,7 @@ code {
       <div class="compare-card good">
         <div class="badge">This Tool</div>
         <h3>Regenerate in Seconds</h3>
-        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Outputs an interactive HTML page — editable cells, NC code preview, even a 3D STEP viewer. Merges your tool library. Prints clean. And it's free.</p>
+        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Outputs an interactive HTML page — editable cells, NC code preview, even a 3D STEP viewer. Point it at all your tool libraries — it figures out which one to use from the G-code. Prints clean.</p>
         <div class="time">&lt; 3 sec to regenerate</div>
       </div>
     </div>
@@ -1192,7 +1279,7 @@ code {
       <div class="pipe-stage">
         <span class="icon">🔗</span>
         <h4>Merge</h4>
-        <p>Combines parsed data with CSV tool library (diameters, holders)</p>
+        <p>Auto-matches to the right tool library from your collection</p>
       </div>
       <div class="pipe-arrow">→</div>
       <div class="pipe-stage">
@@ -1203,7 +1290,53 @@ code {
     </div>
 
     <div class="callout reveal delay-4">
-      <strong>The tool library is optional.</strong> If you don't have a CSV, the setup sheet still generates with all G-code data. Missing supplementary fields (diameter, holder, stickout) are highlighted yellow for manual entry.
+      <strong>Just tell it where your libraries live.</strong> Got three machines with three different tool libraries? Point the tool at all of them. It reads the G-code, identifies which machine it's for, and pulls from the right library automatically. No manual selection. The setup sheet still generates even without a library — missing fields are highlighted yellow for manual entry.
+    </div>
+
+    <!-- Interactive tool library matcher -->
+    <div class="lib-matcher reveal delay-4" id="libMatcher">
+      <div class="lib-matcher-header">Library Auto-Match</div>
+      <div class="lib-matcher-body">
+        <div class="lib-matcher-row">
+          <div>
+            <div style="font-size:0.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">G-code clues</div>
+            <div class="lib-gcode-box" id="libGcode">
+              <div style="color:var(--text-dim)">%</div>
+              <div><span class="lib-clue" id="clue1">O1001 (VMC-400-POST)</span></div>
+              <div style="color:var(--text-dim)">( T1 | 63MM FACEMILL | H1 )</div>
+              <div style="color:var(--text-dim)">N100 G21</div>
+              <div><span class="lib-clue" id="clue2">( MACHINE: VMC-400 )</span></div>
+              <div style="color:var(--text-dim)">N110 G0 G17 G40 G49 G80 G90</div>
+              <div><span class="lib-clue" id="clue3">N120 T1 M6</span></div>
+            </div>
+          </div>
+          <div class="lib-matcher-arrow" id="libArrow">→</div>
+          <div>
+            <div style="font-size:0.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">Your tool libraries</div>
+            <div class="lib-cards">
+              <div class="lib-card" id="lib1">
+                <div class="lib-card-name">5-Axis HMC <span class="lib-match-tag" style="display:none" id="lib1tag">Match</span></div>
+                <div class="lib-card-detail">42 tools &middot; /libs/hmc-500/</div>
+              </div>
+              <div class="lib-card" id="lib2">
+                <div class="lib-card-name">3-Axis VMC <span class="lib-match-tag" style="display:none" id="lib2tag">&#10003; Match</span></div>
+                <div class="lib-card-detail">28 tools &middot; /libs/vmc-400/</div>
+              </div>
+              <div class="lib-card" id="lib3">
+                <div class="lib-card-name">Turning Center <span class="lib-match-tag" style="display:none" id="lib3tag">Match</span></div>
+                <div class="lib-card-detail">16 tools &middot; /libs/lathe-200/</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lib-matcher-explain" id="libExplain">
+          Click <strong>Match</strong> to see how the tool identifies the right library from your G-code.
+        </div>
+        <div class="lib-matcher-controls">
+          <button class="ex-btn ex-btn-wide" id="libMatchBtn" onclick="runLibMatch()">&#9654; Match</button>
+          <button class="ex-btn ex-btn-wide" onclick="resetLibMatch()">Reset</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1302,7 +1435,7 @@ code {
         <span class="af-tree">&nbsp;&nbsp;├─</span>
         <span class="af-name">ToolLibraryImporter.cs</span>
         <span class="af-lines">~120 lines</span>
-        <span class="af-desc">CSV reader. RFC 4180 compliant.</span>
+        <span class="af-desc">Multi-library loader + auto-matcher.</span>
       </div>
       <div class="arch-file">
         <span class="af-tree">&nbsp;&nbsp;├─</span>
@@ -1334,8 +1467,8 @@ code {
         <p>C# records for immutable data. <code>ParsedToolChange</code>, <code>ToolLibraryEntry</code>, <code>MachineConfig</code> — value semantics, no mutation bugs.</p>
       </div>
       <div class="concept-card">
-        <h4>Dictionary Merge</h4>
-        <p>Tool library data merges inside the HTML generator via dictionary lookup. No separate merge layer. Optional by design.</p>
+        <h4>Library Auto-Match</h4>
+        <p>G-code identifies the machine → tool picks the right library from your collection → merges via dictionary lookup. Optional by design.</p>
       </div>
     </div>
   </div>
@@ -1602,6 +1735,44 @@ if (parserSection) {
     });
   }, { threshold: 0.3 });
   parserObserver.observe(parserSection);
+}
+
+// ═══ TOOL LIBRARY MATCHER ═══
+let libMatchRunning = false;
+function runLibMatch() {
+  if (libMatchRunning) return;
+  libMatchRunning = true;
+  resetLibMatch();
+  const steps = [
+    { delay: 400, fn: () => {
+      document.getElementById('clue1').classList.add('active');
+      document.getElementById('libExplain').innerHTML = '<strong>Step 1:</strong> Program header mentions "VMC-400-POST" — that\'s a post processor identifier.';
+    }},
+    { delay: 1400, fn: () => {
+      document.getElementById('clue2').classList.add('active');
+      document.getElementById('libExplain').innerHTML = '<strong>Step 2:</strong> Comment "MACHINE: VMC-400" confirms the machine name. Two clues pointing the same way.';
+    }},
+    { delay: 2600, fn: () => {
+      document.getElementById('libArrow').classList.add('matched');
+      document.getElementById('libArrow').textContent = '→ VMC-400 →';
+      document.getElementById('lib1').classList.add('dimmed');
+      document.getElementById('lib3').classList.add('dimmed');
+      document.getElementById('lib2').classList.add('matched');
+      document.getElementById('lib2tag').style.display = 'inline';
+      document.getElementById('libExplain').innerHTML = '<strong>Matched:</strong> "VMC-400" maps to the <strong>3-Axis VMC</strong> library (28 tools). Tool numbers from the G-code (T1, T2, T5) are looked up in this library to get diameters, holders, and stickout values.';
+      libMatchRunning = false;
+    }}
+  ];
+  steps.forEach(s => setTimeout(s.fn, s.delay));
+}
+function resetLibMatch() {
+  libMatchRunning = false;
+  document.querySelectorAll('.lib-clue').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.lib-card').forEach(c => { c.classList.remove('matched','dimmed'); });
+  document.querySelectorAll('.lib-match-tag').forEach(t => t.style.display = 'none');
+  const arrow = document.getElementById('libArrow');
+  if (arrow) { arrow.classList.remove('matched'); arrow.textContent = '→'; }
+  document.getElementById('libExplain').innerHTML = 'Click <strong>Match</strong> to see how the tool identifies the right library from your G-code.';
 }
 
 // ═══ PROGRESS BAR ═══
