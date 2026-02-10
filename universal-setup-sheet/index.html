@@ -832,6 +832,21 @@ code {
   color: var(--sp-text);
 }
 .sp-table tr:nth-child(even) td { background: var(--sp-row-alt); }
+.sp-table tbody tr { cursor: pointer; transition: all 0.2s; }
+.sp-table tbody tr:hover td { background: rgba(108, 138, 255, 0.08); }
+.sp-table tbody tr.sp-active td { background: rgba(108, 138, 255, 0.12); border-bottom-color: transparent; }
+.sp-gcode-row td { padding: 0 !important; border-bottom: 1px solid var(--sp-border); cursor: default; }
+.sp-gcode-row:hover td { background: transparent !important; }
+.sp-gcode-expand {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  font-family: var(--mono); font-size: 0.72em;
+  line-height: 1.7; color: var(--sp-muted);
+  background: var(--sp-section-bg);
+  padding: 0 14px;
+}
+.sp-gcode-expand.open { max-height: 200px; padding: 10px 14px; }
+.sp-gcode-expand .sp-gcode-highlight { color: var(--sp-accent); font-weight: 600; }
 .sp-mono { font-family: var(--mono); font-weight: 600; font-size: 0.92em; }
 .sp-bold { font-weight: 700; }
 .sp-op {
@@ -1088,7 +1103,7 @@ code {
           <tr><th>T#</th><th>Description</th><th>Operation</th><th>RPM</th><th>Feed</th><th>Coolant</th><th>Min Z</th></tr>
         </thead>
         <tbody>
-          <tr>
+          <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T1</td>
             <td>63mm Face Mill</td>
             <td class="sp-op">FACING</td>
@@ -1097,7 +1112,8 @@ code {
             <td><span class="sp-coolant flood">Flood</span></td>
             <td class="sp-mono sp-depth">-0.5</td>
           </tr>
-          <tr>
+          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( FACING )<br><span class="sp-gcode-highlight">N120 T1 M6</span><br>N140 S8000 M3<br>N150 G43 H1 Z50. M8<br>N160 G0 Z2.<br>N170 G1 Z-0.5 F200.<br><span class="sp-gcode-highlight">N180 G1 X100. Y50. F2500.</span></div></td></tr>
+          <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T2</td>
             <td>16mm 3-Flute Endmill</td>
             <td class="sp-op">ROUGH POCKET</td>
@@ -1106,7 +1122,8 @@ code {
             <td><span class="sp-coolant flood">Flood</span></td>
             <td class="sp-mono sp-depth">-18.0</td>
           </tr>
-          <tr>
+          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( POCKET )<br><span class="sp-gcode-highlight">N220 T2 M6</span><br>N230 S10000 M3<br>N240 G43 H2 Z50. M8<br>N260 G0 Z2.<br>N270 G1 Z-5. F300.<br><span class="sp-gcode-highlight">N280 G1 X60. Y30. F1200.</span></div></td></tr>
+          <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T3</td>
             <td>10mm Ball Nose</td>
             <td class="sp-op">FINISH PROFILE</td>
@@ -1115,7 +1132,8 @@ code {
             <td><span class="sp-coolant tsc">TSC</span></td>
             <td class="sp-mono sp-depth">-22.5</td>
           </tr>
-          <tr>
+          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand">( FINISH PROFILE )<br><span class="sp-gcode-highlight">N340 T5 M6</span><br>N350 G0 G90 G55 X0. Y0.<br>N360 S12000 M3<br>N370 G43 H5 Z50. M88<br>N390 G1 Z-10. F100.<br><span class="sp-gcode-highlight">N400 G1 X80. Y40. F3000.</span></div></td></tr>
+          <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T8</td>
             <td>8.5mm Carbide Drill</td>
             <td class="sp-op">DRILL 4X</td>
@@ -1124,7 +1142,8 @@ code {
             <td><span class="sp-coolant tsc">TSC</span></td>
             <td class="sp-mono sp-depth">-25.0</td>
           </tr>
-          <tr>
+          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N440 T8 M6</span><br>N450 S4200 M3<br>N460 G43 H8 Z50. M88<br><span class="sp-gcode-highlight">N470 G81 Z-25. R2. F320.</span><br>N480 X32. Y6.<br>N490 X38. Y6.<br>N500 X32. Y14.<br>N510 X38. Y14.<br>N520 G80</div></td></tr>
+          <tr onclick="toggleGcodeRow(this)">
             <td class="sp-mono sp-bold">T12</td>
             <td>M10x1.5 Spiral Tap</td>
             <td class="sp-op">TAP 4X</td>
@@ -1133,6 +1152,7 @@ code {
             <td><span class="sp-coolant mist">Mist</span></td>
             <td class="sp-mono sp-depth">-18.0</td>
           </tr>
+          <tr class="sp-gcode-row"><td colspan="7"><div class="sp-gcode-expand"><span class="sp-gcode-highlight">N540 T12 M6</span><br>N550 S800 M3<br>N560 G43 H12 Z50. M7<br><span class="sp-gcode-highlight">N570 G84 Z-18. R2. F1200.</span><br>N580 X32. Y6.<br>N590 X38. Y6.<br>N600 X32. Y14.<br>N610 X38. Y14.<br>N620 G80</div></td></tr>
         </tbody>
       </table>
 
@@ -1722,6 +1742,21 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+// ═══ TOOLPATH G-CODE TOGGLE ═══
+function toggleGcodeRow(row) {
+  const gcodeRow = row.nextElementSibling;
+  if (!gcodeRow || !gcodeRow.classList.contains('sp-gcode-row')) return;
+  const expand = gcodeRow.querySelector('.sp-gcode-expand');
+  const isOpen = expand.classList.contains('open');
+  // Close all others first
+  document.querySelectorAll('.sp-gcode-expand.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.sp-table tbody tr.sp-active').forEach(el => el.classList.remove('sp-active'));
+  if (!isOpen) {
+    expand.classList.add('open');
+    row.classList.add('sp-active');
+  }
+}
+
 // ═══ AUTO-START PARSER ═══
 let parserAutoStarted = false;
 const parserSection = document.getElementById('ch5');
@@ -1732,8 +1767,11 @@ if (parserSection) {
         parserAutoStarted = true;
         setTimeout(() => togglePlay(), 600);
       }
+      if (!e.isIntersecting && playing) {
+        togglePlay();
+      }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.1 });
   parserObserver.observe(parserSection);
 }
 
