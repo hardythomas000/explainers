@@ -132,8 +132,8 @@ body {
 /* ═══ HERO ═══ */
 .hero {
   min-height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  text-align: center; position: relative;
+  justify-content: center; align-items: flex-start;
+  text-align: left; position: relative;
   padding: 60px var(--gutter);
   overflow: hidden;
 }
@@ -156,7 +156,7 @@ body {
   opacity: 0.5;
 }
 
-.hero-content { position: relative; z-index: 1; max-width: 700px; }
+.hero-content { position: relative; z-index: 1; max-width: 700px; padding-left: var(--gutter); }
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -187,11 +187,11 @@ body {
 
 .hero-sub {
   font-size: 1.15em; color: var(--text-secondary);
-  line-height: 1.6; max-width: 520px; margin: 0 auto 40px;
+  line-height: 1.6; max-width: 520px; margin: 0 0 40px;
 }
 
 .hero-stats {
-  display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  display: flex; gap: 32px; justify-content: flex-start; flex-wrap: wrap;
 }
 .hero-stat {
   text-align: center;
@@ -872,9 +872,9 @@ code {
   <button class="nav-dot active" data-label="Top" onclick="scrollToChapter(0)"></button>
   <button class="nav-dot" data-label="Problem" onclick="scrollToChapter(1)"></button>
   <button class="nav-dot" data-label="The Output" onclick="scrollToChapter(2)"></button>
-  <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(3)"></button>
-  <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(4)"></button>
-  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(3)"></button>
+  <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(4)"></button>
+  <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(5)"></button>
   <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(6)"></button>
 </nav>
 
@@ -891,7 +891,7 @@ code {
     </div>
     <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
-      Drop in any .nc file — any CAM software, any post processor, even hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent. Free.
+      Drop in any .nc file — any CAM software, any post processor, even hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent.
     </p>
     <div class="hero-stats reveal delay-3">
       <div class="hero-stat">
@@ -1125,11 +1125,52 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 3: THE PIPELINE
+     CHAPTER 3: 3D DATUM VIEW
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch3">
   <div class="col-wide">
-    <div class="chapter-label reveal">03 — Data Flow</div>
+    <div class="chapter-label reveal">03 — The 3D View</div>
+    <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
+    <p class="lead reveal delay-2">
+      Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
+    </p>
+
+    <div class="callout reveal delay-3" style="border-left-color: var(--accent4);">
+      <strong>How it works:</strong> You export a STEP file of the design stock and fixture geometry from your CAM software. The datum origin is carried with the STEP — and if your CAM exports multiple work coordinate systems (G54, G55, G59...), those come along too. The tool parses the work offsets from the G-code, maps them to the coordinate systems in the STEP, and renders an interactive 3D view. The machinist at the PC can orbit, zoom, and inspect where each datum sits relative to the stock and fixturing — no more guessing from a cropped screenshot. Drag the view below.
+    </div>
+
+    <!-- 3D viewer -->
+    <div class="viewer-container reveal delay-3" id="viewerContainer">
+      <div class="viewer-toolbar">
+        <span class="viewer-toolbar-title">Interactive Setup View</span>
+        <div class="viewer-controls">
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="iso" onclick="setView('iso')">Iso</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="top" onclick="setView('top')">Top</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="front" onclick="setView('front')">Front</button>
+          <button class="ex-btn ex-btn-wide viewer-btn" data-view="right" onclick="setView('right')">Right</button>
+        </div>
+      </div>
+      <canvas id="viewer3d"></canvas>
+      <div class="viewer-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#6c8aff"></span>Stock</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#4a4e5e"></span>Vise</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#ff5c5c"></span>X axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#5cff5c"></span>Y axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#5c8aff"></span>Z axis</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#ffcb5c"></span>G54</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#cb6cff"></span>G55</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     CHAPTER 4: THE PIPELINE
+     ═══════════════════════════════════ -->
+<section class="chapter" id="ch4">
+  <div class="col-wide">
+    <div class="chapter-label reveal">04 — Data Flow</div>
     <h2 class="reveal delay-1">From G-code<br>to setup sheet</h2>
     <p class="lead reveal delay-2">
       Three stages. Two inputs. One output.
@@ -1168,11 +1209,11 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 4: THE PARSER
+     CHAPTER 5: THE PARSER
      ═══════════════════════════════════ -->
-<section class="chapter" id="ch4">
+<section class="chapter" id="ch5">
   <div class="col-wide">
-    <div class="chapter-label reveal">04 — The Parser</div>
+    <div class="chapter-label reveal">05 — The Parser</div>
     <h2 class="reveal delay-1">Step through<br>actual G-code</h2>
     <p class="lead reveal delay-2">
       Click any line to see what the parser does. Watch state accumulate across tool blocks. See exactly when data gets captured — and when it's intentionally skipped.
@@ -1227,47 +1268,6 @@ code {
         </tbody>
       </table>
     </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════
-     CHAPTER 4: 3D DATUM VIEW
-     ═══════════════════════════════════ -->
-<section class="chapter" id="ch5">
-  <div class="col-wide">
-    <div class="chapter-label reveal">05 — What's Next</div>
-    <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
-    <p class="lead reveal delay-2">
-      Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
-    </p>
-
-    <div class="callout reveal delay-3" style="border-left-color: var(--accent4);">
-      <strong>How it works:</strong> You export a STEP file of the design stock and fixture geometry from your CAM software. The datum origin is carried with the STEP — and if your CAM exports multiple work coordinate systems (G54, G55, G59...), those come along too. The tool parses the work offsets from the G-code, maps them to the coordinate systems in the STEP, and renders an interactive 3D view. The machinist at the PC can orbit, zoom, and inspect where each datum sits relative to the stock and fixturing — no more guessing from a cropped screenshot. Drag the view below.
-    </div>
-
-    <!-- 3D viewer -->
-    <div class="viewer-container reveal delay-3" id="viewerContainer">
-      <div class="viewer-toolbar">
-        <span class="viewer-toolbar-title">Interactive Setup View</span>
-        <div class="viewer-controls">
-          <button class="ex-btn ex-btn-wide viewer-btn" data-view="iso" onclick="setView('iso')">Iso</button>
-          <button class="ex-btn ex-btn-wide viewer-btn" data-view="top" onclick="setView('top')">Top</button>
-          <button class="ex-btn ex-btn-wide viewer-btn" data-view="front" onclick="setView('front')">Front</button>
-          <button class="ex-btn ex-btn-wide viewer-btn" data-view="right" onclick="setView('right')">Right</button>
-        </div>
-      </div>
-      <canvas id="viewer3d"></canvas>
-      <div class="viewer-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#6c8aff"></span>Stock</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#4a4e5e"></span>Vise</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#ff5c5c"></span>X axis</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#5cff5c"></span>Y axis</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#5c8aff"></span>Z axis</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#ffcb5c"></span>G54</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#cb6cff"></span>G55</span>
-      </div>
-    </div>
-
   </div>
 </section>
 
@@ -1591,7 +1591,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 // ═══ AUTO-START PARSER ═══
 let parserAutoStarted = false;
-const parserSection = document.getElementById('ch4');
+const parserSection = document.getElementById('ch5');
 if (parserSection) {
   const parserObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
