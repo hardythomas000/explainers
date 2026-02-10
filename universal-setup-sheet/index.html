@@ -929,9 +929,8 @@ code {
   <button class="nav-dot" data-label="The Output" onclick="scrollToChapter(2)"></button>
   <button class="nav-dot" data-label="Pipeline" onclick="scrollToChapter(3)"></button>
   <button class="nav-dot" data-label="Parser" onclick="scrollToChapter(4)"></button>
-  <button class="nav-dot" data-label="Feed Heuristic" onclick="scrollToChapter(5)"></button>
-  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(6)"></button>
-  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(7)"></button>
+  <button class="nav-dot" data-label="3D Datum View" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(6)"></button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -947,7 +946,7 @@ code {
     </div>
     <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
-      Drop in any .nc file — Mastercam, Hypermill, hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent. Free.
+      Drop in any .nc file — any CAM software, any post processor, even hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent. Free.
     </p>
     <div class="hero-stats reveal delay-3">
       <div class="hero-stat">
@@ -991,7 +990,7 @@ code {
       <div class="compare-card bad">
         <div class="badge">The Status Quo</div>
         <h3>Edit, Export, Edit Again</h3>
-        <p>Your CAM exports a setup sheet — but it looks like it was made in 1998 and only covers that one post. Different CAM system? Different machine brand? You're reformatting by hand. Then the machinist tries the setup and wants a change — totally reasonable — but now you're updating the program <em>and</em> rebuilding the sheet. Every revision, every time. Across a shop running Mastercam and Hypermill on Haas and Mazak, it adds up fast. The automated alternatives from third-party resellers? Thousands of dollars.</p>
+        <p>Your CAM exports a setup sheet — but it looks like it was made in 1998 and only covers that one post. Different CAM software? Different machine brand? You're reformatting by hand. Then the machinist tries the setup and wants a change — totally reasonable — but now you're updating the program <em>and</em> rebuilding the sheet. Every revision, every time. Across a shop running two or three different CAM packages on machines from different eras and different manufacturers, it adds up fast. The automated alternatives from third-party resellers? Thousands of dollars.</p>
         <div class="time">10–30 min per revision</div>
       </div>
       <div class="compare-card good">
@@ -1032,7 +1031,7 @@ code {
         </div>
         <div class="sp-header-center">
           <div class="sp-machine-label">3-Axis Vertical</div>
-          <div class="sp-machine">Haas VF-4</div>
+          <div class="sp-machine">VMC-400</div>
         </div>
         <div class="sp-header-right">
           <div class="sp-rev">REV B</div>
@@ -1195,7 +1194,7 @@ code {
       <div class="pipe-stage">
         <span class="icon">📄</span>
         <h4>.nc File</h4>
-        <p>Raw G-code from Mastercam, Hypermill, or hand-written</p>
+        <p>Raw G-code from any CAM software or hand-written</p>
       </div>
       <div class="pipe-arrow">→</div>
       <div class="pipe-stage">
@@ -1224,9 +1223,9 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 3: THE PARSER
+     CHAPTER 4: THE PARSER
      ═══════════════════════════════════ -->
-<section class="chapter" id="ch3">
+<section class="chapter" id="ch4">
   <div class="col-wide">
     <div class="chapter-label reveal">04 — The Parser</div>
     <h2 class="reveal delay-1">Step through<br>actual G-code</h2>
@@ -1239,7 +1238,7 @@ code {
       <div class="concept-card">
         <div class="cc-icon" style="color:var(--accent5)">①</div>
         <h4>Phase 1 — Pre-scan</h4>
-        <p>Reads header comments to find tool descriptions. Mastercam writes them as pipe-delimited lines: <code>( T1 | 63MM FACEMILL | H1 )</code>. Builds a lookup table before the real parsing begins.</p>
+        <p>Reads header comments to find tool descriptions. Many CAM systems write them as pipe-delimited lines: <code>( T1 | 63MM FACEMILL | H1 )</code>. Builds a lookup table before the real parsing begins.</p>
       </div>
       <div class="concept-card">
         <div class="cc-icon" style="color:var(--accent)">②</div>
@@ -1287,62 +1286,18 @@ code {
 </section>
 
 <!-- ═══════════════════════════════════
-     CHAPTER 4: FEED HEURISTIC
-     ═══════════════════════════════════ -->
-<section class="chapter" id="ch4">
-  <div class="col">
-    <div class="chapter-label reveal">05 — The Feed Heuristic</div>
-    <h2 class="reveal delay-1">Not all F-words<br>are equal</h2>
-    <p class="lead reveal delay-2">
-      G-code has one <code>F</code> word for feed rate — but it means different things depending on context. A plunge feed (Z-only) is much slower than a lateral cutting feed (X/Y). Setup sheets need the cutting feed. The parser uses a simple heuristic to tell them apart.
-    </p>
-
-    <div class="heuristic-demo reveal delay-3">
-      <div class="heuristic-header">Feed Detection Logic</div>
-      <div class="heuristic-body">
-        <div class="heuristic-lines">
-          <div class="h-line skip">
-            <span class="h-code">G1 Z-0.5 <strong>F200.</strong></span>
-            <span class="h-verdict">⊘ Skipped — Z only</span>
-          </div>
-          <div class="h-line capture">
-            <span class="h-code">G1 X100. Y50. <strong>F2500.</strong></span>
-            <span class="h-verdict">✓ Captured — has X/Y</span>
-          </div>
-          <div class="h-line skip">
-            <span class="h-code">G1 Z-5. <strong>F150.</strong></span>
-            <span class="h-verdict">⊘ Skipped — Z only</span>
-          </div>
-          <div class="h-line capture">
-            <span class="h-code">G1 X80. <strong>F1200.</strong></span>
-            <span class="h-verdict">✓ Captured — has X</span>
-          </div>
-        </div>
-        <div class="heuristic-explain">
-          <strong>Rule:</strong> Only capture <code>F</code> when the line contains <code>X</code> or <code>Y</code> motion. If no lateral feed is ever found, fall back to the first <code>F</code> encountered (better than nothing). Once a lateral feed is captured, stop looking — the first one is almost always the primary cutting feed.
-        </div>
-      </div>
-    </div>
-
-    <div class="callout reveal delay-4">
-      <strong>Why this matters:</strong> If you record F200 (the plunge feed) on the setup sheet instead of F2500 (the cutting feed), the machinist checking the program will think something is wrong. The setup sheet should show the feed rate the machine will spend 90% of its time at.
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════
-     CHAPTER 5: 3D DATUM VIEW
+     CHAPTER 4: 3D DATUM VIEW
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch5">
   <div class="col-wide">
-    <div class="chapter-label reveal">06 — What's Next</div>
+    <div class="chapter-label reveal">05 — What's Next</div>
     <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
     <p class="lead reveal delay-2">
       Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
     </p>
 
     <div class="callout reveal delay-3" style="border-left-color: var(--accent4);">
-      <strong>The idea:</strong> Parse work offsets (G54, G55, G59...) from the G-code, then render an interactive 3D view showing where each datum sits relative to the stock and fixturing. The machinist at the PC can orbit, zoom, and inspect — no more guessing from a cropped screenshot. Drag the view below.
+      <strong>How it works:</strong> You export a STEP file of the design stock and fixture geometry from your CAM software. The datum origin is carried with the STEP — and if your CAM exports multiple work coordinate systems (G54, G55, G59...), those come along too. The tool parses the work offsets from the G-code, maps them to the coordinate systems in the STEP, and renders an interactive 3D view. The machinist at the PC can orbit, zoom, and inspect where each datum sits relative to the stock and fixturing — no more guessing from a cropped screenshot. Drag the view below.
     </div>
 
     <!-- 3D viewer -->
@@ -1376,7 +1331,7 @@ code {
      ═══════════════════════════════════ -->
 <section class="chapter" id="ch6">
   <div class="col">
-    <div class="chapter-label reveal">07 — Architecture</div>
+    <div class="chapter-label reveal">06 — Architecture</div>
     <h2 class="reveal delay-1">Six files.<br>No abstractions.</h2>
     <p class="lead reveal delay-2">
       No interfaces. No inheritance hierarchies. No dependency injection. Just static methods, records, and one WinForms form. The kind of code you can understand in an afternoon.
@@ -1454,7 +1409,7 @@ code {
 const LINES = [
 ["%", "meta", "Program start marker — standard G-code delimiter.", "ignore", null],
 ["O1001 (26C49050-TR01_REV-A-00 OP1)", "meta", "Program number and filename. The GUI extracts part number and revision from this using a regex.", "ignore", null],
-["( T1 | 63MM FACEMILL | H1 | XY STL 0. | Z STL .1 )", "header", "<span class='explain-tag tag-phase1'>Phase 1</span> Pre-scan finds this Mastercam pipe-delimited comment. Stores: T1 → '63MM FACEMILL'.", "phase1", null],
+["( T1 | 63MM FACEMILL | H1 | XY STL 0. | Z STL .1 )", "header", "<span class='explain-tag tag-phase1'>Phase 1</span> Pre-scan finds this pipe-delimited comment. Stores: T1 → '63MM FACEMILL'.", "phase1", null],
 ["( T2 | 16MM ENDMILL | H2 | XY STL 0. | Z STL 0. )", "header", "<span class='explain-tag tag-phase1'>Phase 1</span> Stores: T2 → '16MM ENDMILL'.", "phase1", null],
 ["( T5 | 10MM BALLNOSE | H5 | XY STL 0. | Z STL 0. )", "header", "<span class='explain-tag tag-phase1'>Phase 1</span> Stores: T5 → '10MM BALLNOSE'. All three descriptions captured before real parsing begins.", "phase1", null],
 ["N100 G21", "meta", "Metric mode (millimeters). Parser doesn't track this — it's a machine setup code.", "ignore", null],
@@ -1487,7 +1442,7 @@ const LINES = [
 ["N340 T5 M6", "tool", "<span class='explain-tag tag-emit'>Emit</span> T5 tool change! Emits T2 data (POCKET, 10000 RPM, F1200, Off, Z-5.0). T5 was pre-staged at N250.", "emit", {tool: "T5", op: "FINISH PROFILE", rpm: "—", feed: "—", coolant: "Off", offset: "G54", height: "—", minZ: "—", dir: "—", iVal: "—", jVal: "—", _emitPrev: true}],
 ["N350 G0 G90 G55 X0. Y0.", "offset", "<span class='explain-tag tag-state'>State</span> G55 — different work offset! Parser captures the change from G54 to G55.", "state", {offset: "G55"}],
 ["N360 S12000 M3", "spindle", "<span class='explain-tag tag-state'>State</span> 12000 RPM — fastest tool in the program.", "state", {rpm: "12000", dir: "CW"}],
-["N370 G43 H5 Z50. M88", "coolant", "<span class='explain-tag tag-state'>State</span> H5 height offset. M88 = Through-Spindle Coolant (TSC). Haas code — Mazak uses M51.", "state", {height: "H5", coolant: "TSC"}],
+["N370 G43 H5 Z50. M88", "coolant", "<span class='explain-tag tag-state'>State</span> H5 height offset. M88 = Through-Spindle Coolant (TSC). M-codes for TSC vary by machine brand.", "state", {height: "H5", coolant: "TSC"}],
 ["N380 G0 Z2.", "rapid", "Approach.", "ignore", null],
 ["N390 G1 Z-10. F100.", "feed", "<span class='explain-tag tag-heuristic'>Heuristic</span> Deepest plunge: Z-10. F100 fallback only — no lateral.", "heuristic", {minZ: "-10.0"}],
 ["N400 G1 X60. Y30. F3000.", "feed", "<span class='explain-tag tag-heuristic'>Heuristic</span> <strong>Lateral feed captured!</strong> F3000 — fastest feed (finish pass, light cuts).", "heuristic", {feed: "F3000"}],
@@ -1688,6 +1643,21 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ═══ AUTO-START PARSER ═══
+let parserAutoStarted = false;
+const parserSection = document.getElementById('ch4');
+if (parserSection) {
+  const parserObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !parserAutoStarted && !playing) {
+        parserAutoStarted = true;
+        setTimeout(() => togglePlay(), 600);
+      }
+    });
+  }, { threshold: 0.3 });
+  parserObserver.observe(parserSection);
+}
 
 // ═══ PROGRESS BAR ═══
 function updateProgress() {
