@@ -664,6 +664,7 @@ code {
 .sheet-preview {
   border-radius: 10px; overflow: hidden;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   transition: all 0.4s ease;
@@ -839,16 +840,26 @@ code {
   transition: transform 0.3s;
 }
 .sp-active .sp-chevron { transform: rotate(180deg); color: var(--sp-accent); }
-.sp-tap-hint {
-  margin-left: auto;
-  font-size: 0.6em; font-weight: 500;
-  text-transform: none; letter-spacing: 0.5px;
-  color: var(--sp-muted);
-  animation: hintPulse 2s ease infinite;
+.sp-tap-hint { display: none; }
+.sp-overlay-hint {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 0.88em;
+  font-weight: 600;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  letter-spacing: 0.3px;
 }
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.6; } 50% { opacity: 1; }
-}
+.sp-overlay-hint.fade-out { opacity: 0; }
 
 .sp-coolant {
   font-size: 0.68em; font-weight: 700;
@@ -1064,6 +1075,7 @@ code {
 
     <!-- Mini setup sheet mockup (sanitized data) -->
     <div class="sheet-preview reveal delay-3" id="sheetPreview">
+      <div class="sp-overlay-hint" id="spOverlayHint">Tap any toolpath row to view its G-code</div>
       <div class="sp-header" id="spHeader">
         <div class="sp-header-left">
           <div class="sp-label">Setup Sheet</div>
@@ -1258,8 +1270,8 @@ code {
       </div>
       <canvas id="viewer3d"></canvas>
       <div class="viewer-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#6c8aff"></span>Stock</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#4a4e5e"></span>Vise</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#b08fd8"></span>Stock</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#8a8d97"></span>Vise</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#ff5c5c"></span>X axis</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#5cff5c"></span>Y axis</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#5c8aff"></span>Z axis</span>
@@ -1742,6 +1754,24 @@ function resetLibMatch() {
   document.getElementById('libExplain').innerHTML = 'Click <strong>Match</strong> to see how the tool identifies the right library from your G-code.';
 }
 
+// ═══ SHEET OVERLAY HINT ═══
+const spHint = document.getElementById('spOverlayHint');
+if (spHint) {
+  const sheetEl = document.getElementById('sheetPreview');
+  let hintShown = false;
+  const hintObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !hintShown) {
+        hintShown = true;
+        spHint.style.opacity = '1';
+        setTimeout(() => spHint.classList.add('fade-out'), 3000);
+        setTimeout(() => spHint.remove(), 3600);
+      }
+    });
+  }, { threshold: 0.4 });
+  hintObserver.observe(sheetEl);
+}
+
 // ═══ PROGRESS BAR ═══
 function updateProgress() {
   const h = document.documentElement.scrollHeight - window.innerHeight;
@@ -1778,7 +1808,7 @@ const themeGridColors = {
   clean: ['#e5e7eb', '#f3f4f6', 0.3]
 };
 const themeViseColors = {
-  workshop: '#5c6370', blueprint: '#3a5070', midnight: '#4a4e5e', clean: '#6b7280'
+  workshop: '#8a8d97', blueprint: '#6a7a8a', midnight: '#6e7080', clean: '#9ca3af'
 };
 function setSheetTheme(theme) {
   const preview = document.getElementById('sheetPreview');
@@ -1867,7 +1897,7 @@ if (canvas) {
   scene.add(gridHelper);
 
   // ─── VISE (base + fixed jaw + movable jaw) ───
-  const viseMat = new THREE.MeshStandardMaterial({ color: 0x5c6370, roughness: 0.6, metalness: 0.6 });
+  const viseMat = new THREE.MeshStandardMaterial({ color: 0x8a8d97, roughness: 0.7, metalness: 0.3 });
   // Base
   const viseBase = new THREE.Mesh(new THREE.BoxGeometry(120, 18, 70), viseMat);
   viseBase.position.set(40, -21, 20);
@@ -1885,7 +1915,7 @@ if (canvas) {
   scene.add(moveJaw);
 
   // ─── STOCK BLOCK ───
-  const stockMat = new THREE.MeshStandardMaterial({ color: 0x7aa2f7, roughness: 0.3, metalness: 0.4, transparent: true, opacity: 0.7 });
+  const stockMat = new THREE.MeshStandardMaterial({ color: 0xb08fd8, roughness: 0.35, metalness: 0.3, transparent: true, opacity: 0.65 });
   const stock = new THREE.Mesh(new THREE.BoxGeometry(100, 30, 40), stockMat);
   stock.position.set(40, 6, 20);
   stock.castShadow = true; stock.receiveShadow = true;
@@ -1894,7 +1924,7 @@ if (canvas) {
   // Stock wireframe
   const stockWire = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(100, 30, 40)),
-    new THREE.LineBasicMaterial({ color: 0x8ca8ff, transparent: true, opacity: 0.5 })
+    new THREE.LineBasicMaterial({ color: 0xc4a8e8, transparent: true, opacity: 0.4 })
   );
   stockWire.position.copy(stock.position);
   scene.add(stockWire);
@@ -2035,7 +2065,7 @@ if (miniCanvas) {
   window._miniGrid = mGrid;
 
   // Vise — gunmetal grey, clearly distinct from stock
-  const mViseMat = new THREE.MeshStandardMaterial({ color: 0x5c6370, roughness: 0.6, metalness: 0.6 });
+  const mViseMat = new THREE.MeshStandardMaterial({ color: 0x8a8d97, roughness: 0.7, metalness: 0.3 });
   window._miniViseMat = mViseMat;
   const mViseBase = new THREE.Mesh(new THREE.BoxGeometry(60, 9, 35), mViseMat);
   mViseBase.position.set(20, -11.5, 10);
@@ -2048,8 +2078,8 @@ if (miniCanvas) {
   mMoveJaw.position.set(20, -3, 26);
   mScene.add(mMoveJaw);
 
-  // Stock — aluminium blue, semi-transparent, clearly distinct from vise
-  const mStockMat = new THREE.MeshStandardMaterial({ color: 0x7aa2f7, roughness: 0.3, metalness: 0.4, transparent: true, opacity: 0.7 });
+  // Stock — light purple, semi-transparent
+  const mStockMat = new THREE.MeshStandardMaterial({ color: 0xb08fd8, roughness: 0.35, metalness: 0.3, transparent: true, opacity: 0.65 });
   const mStock = new THREE.Mesh(new THREE.BoxGeometry(50, 15, 20), mStockMat);
   mStock.position.set(20, 3.5, 10);
   mStock.castShadow = true;
@@ -2058,7 +2088,7 @@ if (miniCanvas) {
   // Stock wireframe
   const mStockWire = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(50, 15, 20)),
-    new THREE.LineBasicMaterial({ color: 0x8ca8ff, transparent: true, opacity: 0.4 })
+    new THREE.LineBasicMaterial({ color: 0xc4a8e8, transparent: true, opacity: 0.4 })
   );
   mStockWire.position.copy(mStock.position);
   mScene.add(mStockWire);
