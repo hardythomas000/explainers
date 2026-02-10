@@ -714,7 +714,7 @@ code {
   <div class="hero-content">
     <div class="hero-badge reveal">
       <span class="hero-badge-dot"></span>
-      C# &middot; .NET 8 &middot; WinForms &middot; ClosedXML
+      A side project by Hardy &middot; built with Claude
     </div>
     <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
@@ -753,23 +753,23 @@ code {
 <section class="chapter" id="ch1">
   <div class="col">
     <div class="chapter-label reveal">01 — The Problem</div>
-    <h2 class="reveal delay-1">Every job needs<br>a setup sheet</h2>
+    <h2 class="reveal delay-1">Setup sheets are<br>a time sink</h2>
     <p class="lead reveal delay-2">
-      Every CNC job needs a setup sheet — tools, speeds, feeds, offsets, workholding. Most CAM software can export one, but they look like Windows 95 clip art and only work for that one system. Run multiple CAM packages across different machine brands? Now you're hand-editing every sheet to match.
+      You know the drill. CAM software can export a setup sheet, but it looks like it was made in 1998 and only covers that one post. Multiple CAM systems and machine brands? Manual reformatting. Then the machinist requests a change — totally expected — and now you're rebuilding the setup sheet on top of updating the program. Every revision, every time.
     </p>
 
     <div class="comparison reveal delay-3">
       <div class="compare-card bad">
         <div class="badge">The Status Quo</div>
-        <h3>CAM Exports + Manual Editing</h3>
-        <p>Your CAM software spits out a basic setup sheet — but it looks like Excel 2000 and only covers that one post. Different CAM system? Different machine brand? Now you're manually editing and reformatting each sheet. Across a busy shop with Mastercam, Hypermill, Haas, and Mazak, the editing adds up fast. The automated alternatives from private resellers? Thousands of dollars.</p>
-        <div class="time">10–30 min editing</div>
+        <h3>Edit, Export, Edit Again</h3>
+        <p>Your CAM spits out a basic sheet — but it looks rough and only covers that one post. Different CAM? Different machine? Manual reformatting. Then the machinist requests a change (as they should), you update the program, and now you're rebuilding the setup sheet too. Across a busy shop with Mastercam, Hypermill, Haas, and Mazak, it adds up. And the automated alternatives from private resellers? Thousands of dollars.</p>
+        <div class="time">10–30 min per revision</div>
       </div>
       <div class="compare-card good">
         <div class="badge">This Tool</div>
-        <h3>One Format, Any Source</h3>
-        <p>Reads the G-code directly — doesn't matter which CAM system generated it. Mastercam, Hypermill, hand-written — same clean output. Merges your tool library. Consistent, print-ready Excel every time. Free.</p>
-        <div class="time">&lt; 3 sec</div>
+        <h3>Regenerate in Seconds</h3>
+        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Same clean output every time. Merges your tool library. Consistent, customizable, print-ready. And it's free.</p>
+        <div class="time">&lt; 3 sec to regenerate</div>
       </div>
     </div>
   </div>
@@ -1049,7 +1049,7 @@ code {
 </section>
 
 <footer class="footer">
-  <p>Built with Claude &middot; <a href="https://github.com/hardythomas000/universal-setup-sheet">View Source</a></p>
+  <p>Built by Hardy Thomas with <a href="https://claude.ai/claude-code">Claude Code</a> &middot; C# / .NET 8 / ClosedXML</p>
 </footer>
 
 <script>
