@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Universal Setup Sheet - Operator Manual</title>
+  <style>
+    :root {
+      --bg: #e8e8e8;
+      --paper: #ffffff;
+      --line: #d3d3d3;
+      --ink: #111111;
+      --muted: #666666;
+      --badge: #111111;
+      --z2: #d6272f;
+      --header-gray: #7f8c99;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 18px;
+    }
+
+    .sheet {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .top-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #f7f7f7;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-nav a {
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--line);
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .header {
+      padding: 16px 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding-bottom: 14px;
+    }
+
+    .setup-label {
+      color: var(--header-gray);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .part-row {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .part-number {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .z2-badge {
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--z2);
+      color: var(--ink);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .op-badge {
+      margin-top: 10px;
+      display: inline-block;
+      background: var(--badge);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      padding: 6px 14px;
+    }
+
+    .rev-block {
+      text-align: right;
+      min-width: 230px;
+    }
+
+    .rev-badge {
+      display: inline-block;
+      background: var(--badge);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: 0.07em;
+      padding: 10px 16px;
+      line-height: 1;
+    }
+
+    .date {
+      margin-top: 6px;
+      color: var(--header-gray);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+      border-top: 1px solid var(--line);
+    }
+
+    .info-cell {
+      padding: 12px 14px;
+      border-right: 1px solid var(--line);
+      min-height: 88px;
+    }
+
+    .info-cell:last-child { border-right: none; }
+
+    .label {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .manual-bar {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 16px;
+      background: #fafafa;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .manual-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .manual-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .section {
+      border-bottom: 1px solid var(--line);
+      padding: 0 0 14px;
+    }
+
+    .section-header {
+      padding: 14px 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .section-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      background: var(--badge);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .section-body {
+      padding: 0 16px;
+    }
+
+    .quick-steps {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+
+    .quick-steps th,
+    .quick-steps td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .quick-steps th {
+      background: #f8f8f8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .btn-chip {
+      display: inline-block;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 4px 8px;
+      background: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      margin: 1px 3px 1px 0;
+      white-space: nowrap;
+    }
+
+    .btn-chip.black {
+      background: #111;
+      border-color: #111;
+      color: #fff;
+    }
+
+    .btn-chip.blue {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .btn-chip.green {
+      border-color: #217346;
+      color: #217346;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(300px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .callout {
+      border: 1px solid var(--line);
+      background: #fafafa;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .callout h3 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .callout p,
+    .callout li {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .callout ul {
+      margin: 0;
+      padding-left: 17px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 7px 0;
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 12px 16px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      background: #fafafa;
+    }
+
+    @media (max-width: 960px) {
+      .part-number { font-size: 34px; }
+      .op-badge { font-size: 22px; }
+      .rev-badge { font-size: 28px; }
+      .date { font-size: 18px; }
+      .value { font-size: 24px; }
+      .info-grid { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .section-header { font-size: 16px; }
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .sheet { border: none; max-width: 100%; }
+      .top-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="top-nav">
+      <a href="./">Back To Explainer</a>
+      <a href="#start">Start Here</a>
+      <a href="#buttons">Button Map</a>
+      <a href="#screen">Screen Areas</a>
+      <a href="#flows">Common Flows</a>
+      <a href="#release">Release Check</a>
+    </div>
+
+    <header class="header">
+      <div class="header-row">
+        <div>
+          <div class="setup-label">Setup Sheet</div>
+          <div class="part-row">
+            <div class="part-number">26A33476</div>
+            <div class="z2-badge">Z2</div>
+          </div>
+          <div class="op-badge">OP 1 OF 2</div>
+        </div>
+        <div class="rev-block">
+          <div class="rev-badge">REV A-00</div>
+          <div class="date" id="todayDate"></div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-cell"><div class="label">NC File</div><div class="value">26334761</div></div>
+        <div class="info-cell"><div class="label">Revision</div><div class="value">A-00</div></div>
+        <div class="info-cell"><div class="label">Material</div><div class="value">6061 Aluminum</div></div>
+        <div class="info-cell"><div class="label">Machine</div><div class="value">Mazak</div></div>
+        <div class="info-cell"><div class="label">Programmer</div><div class="value">-</div></div>
+      </div>
+    </header>
+
+    <div class="manual-bar">
+      <div class="manual-title">CNC Programmer Operating Manual</div>
+      <div class="manual-subtitle">Exactly what to press, where it is, and what it does.</div>
+    </div>
+
+    <section id="start" class="section">
+      <div class="section-header"><span class="section-num">1</span>Start Here - What To Press First</div>
+      <div class="section-body">
+        <table class="quick-steps">
+          <thead>
+            <tr>
+              <th style="width:90px">Order</th>
+              <th style="width:340px">Press</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Step 1</strong></td>
+              <td><span class="btn-chip">Load G-code (.nc / .eia)</span></td>
+              <td>Parses toolpaths, tool numbers, operations, RPM/feed/coolant, max Z, NC filename, revision, and part hints.</td>
+            </tr>
+            <tr>
+              <td><strong>Step 2</strong></td>
+              <td><span class="btn-chip">Load Tool Library</span></td>
+              <td>Loads tool descriptions, holder, diameters, stickout, and tool images from HTML/CSV/.tooldb + image files.</td>
+            </tr>
+            <tr>
+              <td><strong>Step 3</strong></td>
+              <td><span class="btn-chip">Machine picker</span> then choose <strong>MAZAK</strong> or <strong>HAAS</strong></td>
+              <td>Applies machine-specific rules (including Mazak Z2 behavior).</td>
+            </tr>
+            <tr>
+              <td><strong>Step 4</strong></td>
+              <td>Edit fields directly on sheet (NC/Part/Revision/Material/Programmer/Datum/Notes)</td>
+              <td>Final operator-facing setup instructions are locked in.</td>
+            </tr>
+            <tr>
+              <td><strong>Step 5</strong></td>
+              <td>
+                <span class="btn-chip blue">Print Z2 Tools</span>
+                <span class="btn-chip blue">Print Tools Only</span>
+                <span class="btn-chip blue">Print Setup Only</span>
+                <span class="btn-chip green">Export Excel</span>
+                <span class="btn-chip">Export HTML</span>
+              </td>
+              <td>Exports exactly the view needed for machinist/shop floor handoff.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="buttons" class="section">
+      <div class="section-header"><span class="section-num">2</span>Button Map - Where Buttons Are and What They Do</div>
+      <div class="section-body">
+        <table class="quick-steps">
+          <thead>
+            <tr>
+              <th style="width:280px">Button / Control</th>
+              <th style="width:220px">Where</th>
+              <th>What it does / when to use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="btn-chip">Load G-code (.nc / .eia)</span></td>
+              <td>Left sidebar - Load Data</td>
+              <td>Always first. Pulls operations and machining values from NC.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip">Load Tool Library</span></td>
+              <td>Left sidebar - Load Data</td>
+              <td>Load corresponding tool library folder/files after NC is loaded.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip">Machine picker</span></td>
+              <td>Left sidebar - Presets</td>
+              <td>Set or confirm machine. For Mazak, tools above T124 are Z2 tools.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip">Revision picker</span></td>
+              <td>Left sidebar - Presets</td>
+              <td>Standardize revision format quickly.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip">+ Add Image</span></td>
+              <td>Section 3 - Setup Images</td>
+              <td>Add setup photos/screenshots. Also supports paste via Ctrl+V or Win+V.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip black">B</span> <span class="btn-chip">I</span> <span class="btn-chip">A</span> highlights</td>
+              <td>Section 2 - Notes toolbar</td>
+              <td>Format critical notes for machinist readability.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip blue">Print Z2 Tools</span></td>
+              <td>Top export bar</td>
+              <td>Print only Z2 tool subset for Mazak non-resident tool prep.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip blue">Print Tools Only</span></td>
+              <td>Top export bar</td>
+              <td>Print only tool list and toolpath/tooling info.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip blue">Print Setup Only</span></td>
+              <td>Top export bar</td>
+              <td>Print setup sheet without full tool list detail pages.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip green">Export Excel</span> <span class="btn-chip">Export HTML</span></td>
+              <td>Top export bar</td>
+              <td>Create shareable outputs for office and shop-floor distribution.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="screen" class="section">
+      <div class="section-header"><span class="section-num">3</span>Screen Areas - What Each Section Is For</div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="callout">
+            <h3>1) Workholding & Datum</h3>
+            <ul>
+              <li>Fixture/setup instructions for the operator.</li>
+              <li>Stock dimensions and datum origin definitions.</li>
+              <li>Must be correct before release.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>2) Notes</h3>
+            <ul>
+              <li>Short, high-value notes only.</li>
+              <li>Use highlight colors for safety/quality critical points.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>3) Setup Images</h3>
+            <ul>
+              <li>Visual orientation and fixture evidence.</li>
+              <li>Paste screenshots with <strong>Ctrl+V</strong> or <strong>Win+V</strong>.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>4) Toolpaths</h3>
+            <ul>
+              <li>Operation sequence and cutting parameters.</li>
+              <li>Validate tool, RPM, feed, max Z, coolant.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flows" class="section">
+      <div class="section-header"><span class="section-num">4</span>Common CNC Programmer Flows</div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="callout">
+            <h3>Flow A - New Job</h3>
+            <div class="checkbox-row"><input type="checkbox" /> Load NC file</div>
+            <div class="checkbox-row"><input type="checkbox" /> Load tool library + images</div>
+            <div class="checkbox-row"><input type="checkbox" /> Confirm machine, part, revision</div>
+            <div class="checkbox-row"><input type="checkbox" /> Confirm toolpath values</div>
+            <div class="checkbox-row"><input type="checkbox" /> Add setup notes/images</div>
+          </div>
+          <div class="callout">
+            <h3>Flow B - Mazak Check</h3>
+            <div class="checkbox-row"><input type="checkbox" /> Confirm part number (example: 26A33476)</div>
+            <div class="checkbox-row"><input type="checkbox" /> Confirm NC filename separately</div>
+            <div class="checkbox-row"><input type="checkbox" /> Confirm tools above T124 marked Z2</div>
+            <div class="checkbox-row"><input type="checkbox" /> Use Print Z2 Tools output if required</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="release" class="section">
+      <div class="section-header"><span class="section-num">5</span>Release Check - Before Sending To Shop Floor</div>
+      <div class="section-body">
+        <table class="quick-steps">
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th>Expected</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Header fields</td><td>Part/program, revision, machine, material are correct.</td></tr>
+            <tr><td>Toolpath table</td><td>No missing critical values; coolant and spindle behavior make sense.</td></tr>
+            <tr><td>Visual setup info</td><td>Workholding, datum, notes, and setup images are clear.</td></tr>
+            <tr><td>Output</td><td>Print/export mode matches shop floor need (full / tools only / setup only / Z2).</td></tr>
+            <tr><td>Manual change line</td><td>Updated date, who changed, and short reason documented.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer">
+      Offline document. No external scripts or network calls. Keep this manual next to setup-sheet-playground.html for quick reference.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const d = new Date();
+      const formatted = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      const el = document.getElementById("todayDate");
+      if (el) el.textContent = formatted;
+    })();
+  </script>
+</body>
+</html>
