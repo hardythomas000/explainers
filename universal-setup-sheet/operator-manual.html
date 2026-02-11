@@ -386,17 +386,17 @@
 
     <div class="manual-bar">
       <div class="manual-title">CNC Programmer Operating Manual</div>
-      <div class="manual-subtitle">Exactly what to press, where it is, and what it does.</div>
+      <div class="manual-subtitle">Two core steps: load NC file, then add setup image or STEP file. Everything else is optional extras.</div>
     </div>
 
     <section id="start" class="section">
-      <div class="section-header"><span class="section-num">1</span>Start Here - What To Press First</div>
+      <div class="section-header"><span class="section-num">1</span>Core Workflow - Only 2 Main Steps</div>
       <div class="section-body">
         <table class="quick-steps">
           <thead>
             <tr>
               <th style="width:90px">Order</th>
-              <th style="width:340px">Press</th>
+              <th style="width:380px">Press</th>
               <th>Result</th>
             </tr>
           </thead>
@@ -408,29 +408,22 @@
             </tr>
             <tr>
               <td><strong>Step 2</strong></td>
-              <td><span class="btn-chip">Load Tool Library</span></td>
-              <td>Loads tool descriptions, holder, diameters, stickout, and tool images from HTML/CSV/.tooldb + image files.</td>
+              <td><span class="btn-chip">+ Add Image</span> <span class="btn-chip">Load STEP File (if used)</span></td>
+              <td>Adds visual setup references for machinists: photos/screenshots and optional 3D part/setup context.</td>
             </tr>
             <tr>
-              <td><strong>Step 3</strong></td>
-              <td><span class="btn-chip">Machine picker</span> then choose <strong>MAZAK</strong> or <strong>HAAS</strong></td>
-              <td>Applies machine-specific rules (including Mazak Z2 behavior).</td>
-            </tr>
-            <tr>
-              <td><strong>Step 4</strong></td>
-              <td>Edit fields directly on sheet (NC/Part/Revision/Material/Programmer/Datum/Notes)</td>
-              <td>Final operator-facing setup instructions are locked in.</td>
-            </tr>
-            <tr>
-              <td><strong>Step 5</strong></td>
+              <td><strong>Optional</strong></td>
               <td>
+                <span class="btn-chip">Load Tool Library</span>
+                <span class="btn-chip">Machine picker</span>
+                <span class="btn-chip">Revision picker</span>
                 <span class="btn-chip blue">Print Z2 Tools</span>
                 <span class="btn-chip blue">Print Tools Only</span>
                 <span class="btn-chip blue">Print Setup Only</span>
                 <span class="btn-chip green">Export Excel</span>
                 <span class="btn-chip">Export HTML</span>
               </td>
-              <td>Exports exactly the view needed for machinist/shop floor handoff.</td>
+              <td>Extra features for polishing, filtering, and different output formats.</td>
             </tr>
           </tbody>
         </table>
@@ -452,52 +445,52 @@
             <tr>
               <td><span class="btn-chip">Load G-code (.nc / .eia)</span></td>
               <td>Left sidebar - Load Data</td>
-              <td>Always first. Pulls operations and machining values from NC.</td>
+              <td><strong>Core step 1.</strong> Always first. Pulls operations and machining values from NC.</td>
+            </tr>
+            <tr>
+              <td><span class="btn-chip">+ Add Image</span> <span class="btn-chip">Load STEP File (if used)</span></td>
+              <td>Setup Images section / STEP area</td>
+              <td><strong>Core step 2.</strong> Adds visual setup references for the operator.</td>
             </tr>
             <tr>
               <td><span class="btn-chip">Load Tool Library</span></td>
               <td>Left sidebar - Load Data</td>
-              <td>Load corresponding tool library folder/files after NC is loaded.</td>
+              <td><strong>Optional extra.</strong> Load corresponding tool library folder/files after NC is loaded.</td>
             </tr>
             <tr>
               <td><span class="btn-chip">Machine picker</span></td>
               <td>Left sidebar - Presets</td>
-              <td>Set or confirm machine. For Mazak, tools above T124 are Z2 tools.</td>
+              <td><strong>Optional extra.</strong> Set or confirm machine. For Mazak, tools above T124 are Z2 tools.</td>
             </tr>
             <tr>
               <td><span class="btn-chip">Revision picker</span></td>
               <td>Left sidebar - Presets</td>
-              <td>Standardize revision format quickly.</td>
-            </tr>
-            <tr>
-              <td><span class="btn-chip">+ Add Image</span></td>
-              <td>Section 3 - Setup Images</td>
-              <td>Add setup photos/screenshots. Also supports paste via Ctrl+V or Win+V.</td>
+              <td><strong>Optional extra.</strong> Standardize revision format quickly.</td>
             </tr>
             <tr>
               <td><span class="btn-chip black">B</span> <span class="btn-chip">I</span> <span class="btn-chip">A</span> highlights</td>
               <td>Section 2 - Notes toolbar</td>
-              <td>Format critical notes for machinist readability.</td>
+              <td><strong>Optional extra.</strong> Format critical notes for machinist readability.</td>
             </tr>
             <tr>
               <td><span class="btn-chip blue">Print Z2 Tools</span></td>
               <td>Top export bar</td>
-              <td>Print only Z2 tool subset for Mazak non-resident tool prep.</td>
+              <td><strong>Optional extra.</strong> Print only Z2 tool subset for Mazak non-resident tool prep.</td>
             </tr>
             <tr>
               <td><span class="btn-chip blue">Print Tools Only</span></td>
               <td>Top export bar</td>
-              <td>Print only tool list and toolpath/tooling info.</td>
+              <td><strong>Optional extra.</strong> Print only tool list and toolpath/tooling info.</td>
             </tr>
             <tr>
               <td><span class="btn-chip blue">Print Setup Only</span></td>
               <td>Top export bar</td>
-              <td>Print setup sheet without full tool list detail pages.</td>
+              <td><strong>Optional extra.</strong> Print setup sheet without full tool list detail pages.</td>
             </tr>
             <tr>
               <td><span class="btn-chip green">Export Excel</span> <span class="btn-chip">Export HTML</span></td>
               <td>Top export bar</td>
-              <td>Create shareable outputs for office and shop-floor distribution.</td>
+              <td><strong>Optional extra.</strong> Create shareable outputs for office and shop-floor distribution.</td>
             </tr>
           </tbody>
         </table>
@@ -548,10 +541,10 @@
           <div class="callout">
             <h3>Flow A - New Job</h3>
             <div class="checkbox-row"><input type="checkbox" /> Load NC file</div>
-            <div class="checkbox-row"><input type="checkbox" /> Load tool library + images</div>
-            <div class="checkbox-row"><input type="checkbox" /> Confirm machine, part, revision</div>
-            <div class="checkbox-row"><input type="checkbox" /> Confirm toolpath values</div>
-            <div class="checkbox-row"><input type="checkbox" /> Add setup notes/images</div>
+            <div class="checkbox-row"><input type="checkbox" /> Add setup image(s) or STEP file</div>
+            <div class="checkbox-row"><input type="checkbox" /> Optional: load tool library</div>
+            <div class="checkbox-row"><input type="checkbox" /> Optional: confirm machine/part/revision</div>
+            <div class="checkbox-row"><input type="checkbox" /> Optional: print/export mode</div>
           </div>
           <div class="callout">
             <h3>Flow B - Mazak Check</h3>
