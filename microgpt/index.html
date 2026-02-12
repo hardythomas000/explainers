@@ -10,18 +10,18 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #08090c;
-  --bg-surface: #13151e;
-  --bg-interactive: #181b27;
-  --text: #e8eaf0;
-  --text-secondary: #8b90a0;
-  --text-dim: #4a4e5e;
-  --border: #1e2133;
-  --accent: #6c8aff;
-  --accent2: #ff6ac1;
-  --accent3: #69ff94;
-  --accent4: #ffd866;
-  --accent-glow: rgba(108, 138, 255, 0.15);
+  --bg: #0c0a0f;
+  --bg-surface: #16131c;
+  --bg-interactive: #1e1a26;
+  --text: #f0ece4;
+  --text-secondary: #9e96a8;
+  --text-dim: #5a5264;
+  --border: #2a2435;
+  --accent: #f0a848;
+  --accent2: #e85d9a;
+  --accent3: #7deba0;
+  --accent4: #8cb4ff;
+  --accent-glow: rgba(240, 168, 72, 0.15);
   --font: 'Inter', -apple-system, system-ui, sans-serif;
   --mono: 'JetBrains Mono', 'SF Mono', monospace;
 }
@@ -132,13 +132,13 @@ body {
 /* ============ HERO BACKGROUND ============ */
 .hero-bg {
   position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(108,138,255,0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(240,168,72,0.06) 0%, transparent 70%);
 }
 .hero-grid {
   position: fixed; inset: 0; z-index: -1;
   background-image:
-    linear-gradient(rgba(30,33,51,0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(30,33,51,0.5) 1px, transparent 1px);
+    linear-gradient(rgba(42,36,53,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,36,53,0.5) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
@@ -216,23 +216,23 @@ body {
   content: attr(data-n); position: absolute; left: 8px; width: 32px;
   text-align: right; color: var(--text-dim); font-size: 10px;
 }
-.code-line:hover { background: rgba(108,138,255,0.05); }
+.code-line:hover { background: rgba(240,168,72,0.05); }
 .code-line.active {
-  background: rgba(108,138,255,0.12);
+  background: rgba(240,168,72,0.12);
   border-left: 2px solid var(--accent);
 }
 .code-line.active::before { color: var(--accent); }
 
 /* Syntax colors */
-.syn-kw { color: #ff6ac1; }
-.syn-fn { color: #6c8aff; }
-.syn-str { color: #69ff94; }
-.syn-num { color: #ffd866; }
-.syn-cmt { color: #4a4e5e; font-style: italic; }
-.syn-op { color: #ff6ac1; }
+.syn-kw { color: #e85d9a; }
+.syn-fn { color: #f0a848; }
+.syn-str { color: #7deba0; }
+.syn-num { color: #e8c560; }
+.syn-cmt { color: #5a5264; font-style: italic; }
+.syn-op { color: #e85d9a; }
 .syn-cls { color: #ffa657; }
-.syn-self { color: #ff6ac1; font-style: italic; }
-.syn-dec { color: #69ff94; }
+.syn-self { color: #e85d9a; font-style: italic; }
+.syn-dec { color: #7deba0; }
 
 /* Explanation panel */
 .code-explain {
@@ -434,7 +434,7 @@ body {
     </div>
     <h1 class="reveal delay-1">A complete GPT<br>in <span class="highlight">pure Python.</span></h1>
     <p class="hero-sub reveal delay-2">
-      No PyTorch. No NumPy. No dependencies. Just the raw algorithm that powers every large language model, laid bare in ~100 lines of code.
+      No libraries. No frameworks. Just the actual algorithm behind ChatGPT, Claude, and every other AI chatbot, written from scratch in about 100 lines. This page walks through how it works.
     </p>
     <div class="hero-stats reveal delay-3">
       <div class="hero-stat">
@@ -463,46 +463,46 @@ body {
     <div class="chapter-label reveal">01 &mdash; The Idea</div>
     <h2 class="reveal delay-1">Everything else<br>is just <span class="highlight">efficiency</span></h2>
     <p class="lead reveal delay-2">
-      GPT-4, Claude, Gemini. Billions of parameters trained on the entire internet. But the core algorithm? It fits on a single page. Karpathy's microGPT strips away every optimization, every library, every abstraction, and shows you the beating heart of modern AI.
+      ChatGPT, Claude, Gemini. They seem impossibly complex. Billions of numbers, trained on the entire internet. But the actual recipe? It fits on one page. Andrej Karpathy (one of the founders of OpenAI) took that recipe and wrote it from scratch, showing every step, with nothing hidden behind libraries.
     </p>
 
     <div class="compare-row reveal delay-3">
       <div class="compare-card bad">
         <span class="badge">GPT-4 Scale</span>
-        <h3>Trillions of ops</h3>
-        <p>Thousands of GPUs, months of training, terabytes of data, millions of lines of infrastructure code. CUDA kernels, distributed training, mixed precision, flash attention.</p>
+        <h3>Industrial scale</h3>
+        <p>Warehouses full of specialised hardware, months of training, more text than you could read in a thousand lifetimes, and millions of lines of engineering code to hold it all together.</p>
       </div>
       <div class="compare-card good">
         <span class="badge">microGPT</span>
-        <h3>Same algorithm</h3>
-        <p>One Python file. Trains on a list of names. Generates new ones. The exact same math: embeddings, attention, backprop, Adam. Just without the scale.</p>
+        <h3>Same recipe</h3>
+        <p>One file. Trains on a list of baby names. Learns to make up new ones. Uses the exact same steps as the big models, just tiny. Like building a working jet engine the size of a coffee cup.</p>
       </div>
     </div>
 
     <div class="pipeline reveal delay-4">
       <div class="pipe-stage">
         <div class="pipe-label">Tokenize</div>
-        <div class="pipe-desc">Characters become numbers</div>
+        <div class="pipe-desc">Turn letters into numbers</div>
       </div>
       <div class="pipe-stage">
         <div class="pipe-label">Embed</div>
-        <div class="pipe-desc">Numbers become vectors</div>
+        <div class="pipe-desc">Give each number a meaning</div>
       </div>
       <div class="pipe-stage">
         <div class="pipe-label">Attend</div>
-        <div class="pipe-desc">Tokens talk to each other</div>
+        <div class="pipe-desc">Let letters look at each other</div>
       </div>
       <div class="pipe-stage">
-        <div class="pipe-label">Transform</div>
-        <div class="pipe-desc">MLP processes the result</div>
+        <div class="pipe-label">Think</div>
+        <div class="pipe-desc">Crunch the numbers</div>
       </div>
       <div class="pipe-stage">
         <div class="pipe-label">Predict</div>
-        <div class="pipe-desc">Probabilities over next token</div>
+        <div class="pipe-desc">Guess the next letter</div>
       </div>
       <div class="pipe-stage">
         <div class="pipe-label">Learn</div>
-        <div class="pipe-desc">Backprop + Adam update</div>
+        <div class="pipe-desc">Fix mistakes, try again</div>
       </div>
     </div>
   </div>
@@ -514,7 +514,7 @@ body {
     <div class="chapter-label reveal">02 &mdash; The Tokenizer</div>
     <h2 class="reveal delay-1">Letters in,<br><span class="highlight">numbers</span> out</h2>
     <p class="lead reveal delay-2">
-      Neural networks don't understand text. They understand numbers. The tokenizer maps each unique character to an integer ID. The special BOS (Beginning of Sequence) token marks where names start and end.
+      Computers can't read letters. They only work with numbers. So the first step is converting each letter into a number. The letter "a" might become 0, "b" becomes 1, and so on. There's also a special marker called BOS that tells the model "a name starts here" and "a name ends here."
     </p>
 
     <div class="demo-box reveal delay-3" id="tokenizerDemo">
@@ -531,7 +531,7 @@ body {
     </div>
 
     <div class="callout reveal delay-4">
-      <strong>Why character-level?</strong> Production LLMs use subword tokenizers (BPE) that merge frequent character pairs into larger tokens. microGPT keeps it simple: one character = one token. The vocabulary is just the 26 lowercase letters plus a few extras from the names dataset, plus the BOS marker. About 28 tokens total.
+      <strong>Why single letters?</strong> Real AI chatbots chop words into chunks (like "un" + "believ" + "able") because it's faster. microGPT keeps it dead simple: one letter = one token. The entire vocabulary is just the alphabet plus a start/end marker. About 28 tokens total.
     </div>
   </div>
 </section>
@@ -542,13 +542,13 @@ body {
     <div class="chapter-label reveal">03 &mdash; The Autograd</div>
     <h2 class="reveal delay-1">Teaching the network<br>to <span class="highlight">learn</span></h2>
     <p class="lead reveal delay-2">
-      This is the secret sauce. The <code>Value</code> class wraps every number in the network and tracks how it was computed. When you call <code>.backward()</code>, it walks the computation graph in reverse, applying the chain rule to calculate gradients. Every addition, multiplication, and exponent knows its own derivative.
+      This is how the model learns from its mistakes. Every calculation the model does is recorded, like breadcrumbs through a maze. When the model gets something wrong, it traces those breadcrumbs backwards to figure out which numbers caused the mistake, and how much each one contributed. Then it adjusts them. That's it. That's learning.
     </p>
 
     <div class="demo-box reveal delay-3" id="autogradDemo">
       <h4>Computation Graph</h4>
       <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
-        Watch values flow forward (blue) and gradients flow backward (pink). Click "Backward" to see the chain rule in action.
+        Numbers flow left to right to make a prediction (gold). When the prediction is wrong, blame flows right to left (pink) to figure out what to fix. Click the buttons to see each direction.
       </p>
       <div class="comp-graph" id="compGraph">
         <canvas id="compCanvas"></canvas>
@@ -561,7 +561,7 @@ body {
     </div>
 
     <div class="callout reveal delay-4" style="border-left-color: var(--accent2);">
-      <strong>This replaces PyTorch.</strong> In a real framework, <code>torch.Tensor</code> does exactly this but on GPU arrays with thousands of values at once. microGPT does it one scalar at a time, making every operation visible. Slow? Yes. Educational? Absolutely.
+      <strong>This is what PyTorch does.</strong> When researchers build AI models, they use a library called PyTorch that does this exact thing, but on graphics cards processing millions of numbers at once. microGPT does it one number at a time so you can see every step. Way too slow for real use, but perfect for understanding.
     </div>
   </div>
 </section>
@@ -572,13 +572,13 @@ body {
     <div class="chapter-label reveal">04 &mdash; The Architecture</div>
     <h2 class="reveal delay-1">Attention is<br><span class="highlight">all you need</span></h2>
     <p class="lead reveal delay-2">
-      The GPT architecture: token embeddings + position embeddings go through multi-head attention (4 heads), then an MLP. That's it. One layer. The attention mechanism lets each token look at all previous tokens and decide which ones matter for predicting the next one.
+      Here's the core idea: when the model is trying to guess the next letter, it doesn't just look at the last letter. It looks at <em>all</em> the letters so far and decides which ones matter most. Predicting what comes after "joh"? The "j" matters a lot (probably "john"). That's attention. The model has 4 separate "attention heads" that each learn to focus on different patterns.
     </p>
 
     <div class="demo-box reveal delay-3" id="attnDemo">
       <h4>Attention Heatmap</h4>
       <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
-        Each cell shows how much token (row) attends to token (column). Brighter = stronger attention. Click "Randomize" to see different patterns.
+        Each cell shows how much one letter is paying attention to another. Brighter = paying more attention. The dark triangle means a letter can only look backwards, never at future letters. Click "Randomize" to see different patterns.
       </p>
       <div class="attn-demo">
         <div id="attnLabelsTop" class="attn-labels"></div>
@@ -598,7 +598,7 @@ body {
     </div>
 
     <div class="callout reveal delay-4" style="border-left-color: var(--accent3);">
-      <strong>RMSNorm, not LayerNorm.</strong> microGPT diverges slightly from GPT-2: it uses RMSNorm (simpler, no mean subtraction), ReLU-squared instead of GeLU, and no biases anywhere. These are common simplifications in modern LLMs (LLaMA uses the same choices).
+      <strong>Simplified on purpose.</strong> microGPT uses slightly simpler versions of some building blocks compared to the original GPT-2, but the simplifications actually match what newer models like LLaMA use. The core idea is identical: attention + a simple neural network, stacked in layers.
     </div>
   </div>
 </section>
@@ -609,13 +609,13 @@ body {
     <div class="chapter-label reveal">05 &mdash; The Training Loop</div>
     <h2 class="reveal delay-1">500 steps to<br><span class="highlight">learn names</span></h2>
     <p class="lead reveal delay-2">
-      For each training step: take one name, tokenize it, run it through the model, compute the loss (how wrong the predictions were), backpropagate the gradients, and nudge every parameter slightly in the right direction with Adam. Repeat 500 times.
+      Training is just a loop. Pick a name from the list. Show it to the model letter by letter. After each letter, the model guesses the next one. If it's wrong, trace the blame backwards (that's the autograd from earlier), then nudge every number in the model slightly to make it less wrong next time. Do this 500 times and the model gets pretty good at guessing what comes next in a name.
     </p>
 
     <div class="demo-box reveal delay-3" id="trainDemo">
       <h4>Training Simulation</h4>
       <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
-        Watch the loss decrease as the model learns. Lower loss = better predictions.
+        The "loss" measures how wrong the model's guesses are. Watch it drop as the model learns. Lower = smarter.
       </p>
       <div class="loss-chart" id="lossChart">
         <canvas id="lossCanvas"></canvas>
@@ -627,7 +627,7 @@ body {
     </div>
 
     <div class="callout reveal delay-4" style="border-left-color: var(--accent4);">
-      <strong>Adam optimizer.</strong> Gradient descent is the simple version: just subtract the gradient scaled by a learning rate. Adam is smarter: it tracks a running average of gradients (momentum) and their squared magnitudes (adaptive learning rate), plus bias correction. The "blessed optimizer" as Karpathy calls it. Cosine learning rate decay starts high and gently slows down, like easing off the gas as you approach the destination.
+      <strong>The optimizer.</strong> When the model figures out it was wrong, it needs to decide <em>how much</em> to adjust each number. A simple approach would just push numbers in the right direction. Adam (the optimizer used here) is smarter: it remembers which direction things have been moving and adjusts its step size accordingly. Think of it like a ball rolling downhill that builds up momentum. Karpathy calls it "the blessed optimizer." The learning rate also slows down over time, like easing off the gas as you get close to your destination.
     </div>
   </div>
 </section>
@@ -638,13 +638,13 @@ body {
     <div class="chapter-label reveal">06 &mdash; Inference</div>
     <h2 class="reveal delay-1">The model<br><span class="highlight">speaks</span></h2>
     <p class="lead reveal delay-2">
-      After training, the model can generate new names it has never seen. Start with a BOS token, run the model to get probabilities over the next character, sample one, feed it back in, repeat until it emits another BOS (end of name). Temperature controls creativity: low = conservative, high = wild.
+      Once trained, the model can invent new names. You give it the start marker, it guesses the most likely first letter. You feed that letter back in, it guesses the second letter. Keep going until it decides the name is done. Temperature is a dial: turn it down and the model plays it safe with common names, turn it up and it gets creative (and weird).
     </p>
 
     <div class="demo-box reveal delay-3" id="inferDemo">
       <h4>Token Probability</h4>
       <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:8px;">
-        Given the sequence so far, the model outputs a probability for every possible next character. Adjust temperature to see how it changes the distribution.
+        Given the letters so far, the model assigns a likelihood to every possible next letter. Drag the temperature slider to see how it changes which letters the model would pick.
       </p>
       <div class="temp-control">
         <span>Temperature:</span>
@@ -661,7 +661,7 @@ body {
     </div>
 
     <div class="callout reveal delay-4" style="border-left-color: var(--accent);">
-      <strong>This is exactly how ChatGPT works.</strong> Same loop: predict next token, sample, feed back. The only differences are scale (billions vs thousands of parameters), vocabulary (50,000+ subword tokens vs 28 characters), and context length (128K+ vs 8 tokens). The core sampling algorithm is identical.
+      <strong>This is exactly how ChatGPT works.</strong> Same loop: predict the next piece, pick one, feed it back in. The only differences are size (billions of numbers instead of thousands), vocabulary (word chunks instead of single letters), and memory (it can look at 128,000+ tokens instead of 8). But the core process of "guess the next one, then repeat" is identical.
     </div>
   </div>
 </section>
@@ -704,8 +704,8 @@ window.addEventListener('scroll', () => {
 const CHARS = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const BOS_ID = CHARS.length;
 const COLORS_TOK = [
-  '#6c8aff','#ff6ac1','#69ff94','#ffd866','#ffa657','#00e5ff',
-  '#ff4444','#b08fd8','#44cc88','#ffaa44','#79c0ff','#7ee787',
+  '#f0a848','#e85d9a','#7deba0','#8cb4ff','#ffa657','#d4a0e8',
+  '#ff7b6b','#b08fd8','#44cc88','#ffaa44','#e8c560','#7ee787',
 ];
 
 function updateTokenizer() {
@@ -777,13 +777,13 @@ function runAutograd(mode) {
     ctx.moveTo(nodes[a].x, nodes[a].y);
     ctx.lineTo(nodes[b].x, nodes[b].y);
     if (mode === 'backward') {
-      ctx.strokeStyle = '#ff6ac155';
+      ctx.strokeStyle = '#e85d9a55';
       ctx.lineWidth = 2;
     } else if (mode === 'forward') {
-      ctx.strokeStyle = '#6c8aff55';
+      ctx.strokeStyle = '#f0a84855';
       ctx.lineWidth = 2;
     } else {
-      ctx.strokeStyle = '#1e213366';
+      ctx.strokeStyle = '#2a243566';
       ctx.lineWidth = 1;
     }
     ctx.stroke();
@@ -795,12 +795,12 @@ function runAutograd(mode) {
     const angle = Math.atan2(dy, dx);
     if (mode === 'backward') {
       // Backward arrow (reversed)
-      ctx.fillStyle = '#ff6ac1';
+      ctx.fillStyle = '#e85d9a';
       ctx.save(); ctx.translate(mx, my); ctx.rotate(angle + Math.PI);
       ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-3, -4); ctx.lineTo(-3, 4); ctx.fill();
       ctx.restore();
     } else if (mode === 'forward') {
-      ctx.fillStyle = '#6c8aff';
+      ctx.fillStyle = '#f0a848';
       ctx.save(); ctx.translate(mx, my); ctx.rotate(angle);
       ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-3, -4); ctx.lineTo(-3, 4); ctx.fill();
       ctx.restore();
@@ -811,25 +811,25 @@ function runAutograd(mode) {
   for (const n of nodes) {
     const r = 28;
     ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-    ctx.fillStyle = '#13151e';
-    ctx.strokeStyle = mode === 'backward' && n.grad !== null ? '#ff6ac1' :
-                     mode === 'forward' ? '#6c8aff' : '#1e2133';
+    ctx.fillStyle = '#16131c';
+    ctx.strokeStyle = mode === 'backward' && n.grad !== null ? '#e85d9a' :
+                     mode === 'forward' ? '#f0a848' : '#2a2435';
     ctx.lineWidth = 2;
     ctx.fill(); ctx.stroke();
 
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#e8eaf0';
+    ctx.fillStyle = '#f0ece4';
     ctx.fillText(n.label, n.x, n.y + 3);
 
     if (mode === 'forward') {
       ctx.font = '9px "JetBrains Mono", monospace';
-      ctx.fillStyle = '#6c8aff';
+      ctx.fillStyle = '#f0a848';
       ctx.fillText(n.val.toFixed(3), n.x, n.y + 16);
     }
     if (mode === 'backward' && n.grad !== null) {
       ctx.font = '9px "JetBrains Mono", monospace';
-      ctx.fillStyle = '#ff6ac1';
+      ctx.fillStyle = '#e85d9a';
       ctx.fillText('∇' + n.grad.toFixed(3), n.x, n.y - 34);
     }
   }
@@ -893,11 +893,11 @@ function renderAttn() {
       if (j <= i) {
         const w = hw[i][j];
         const intensity = Math.floor(w * 255);
-        cell.style.background = `rgba(108, 138, 255, ${w * 0.9 + 0.1})`;
+        cell.style.background = `rgba(240, 168, 72, ${w * 0.9 + 0.1})`;
         cell.textContent = (w * 100).toFixed(0);
-        cell.style.color = w > 0.4 ? '#0a0e17' : '#e8eaf0';
+        cell.style.color = w > 0.4 ? '#0c0a0f' : '#f0ece4';
       } else {
-        cell.style.background = '#0a0e1780';
+        cell.style.background = '#0c0a0f80';
         cell.textContent = '';
       }
       grid.appendChild(cell);
@@ -932,7 +932,7 @@ function drawLoss() {
   if (lossHistory.length < 2) return;
 
   // Grid
-  ctx.strokeStyle = '#1e213333';
+  ctx.strokeStyle = '#2a243533';
   ctx.lineWidth = 0.5;
   for (let y = 0; y < H; y += H/5) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
@@ -947,7 +947,7 @@ function drawLoss() {
     const y = H - ((lossHistory[i] - minLoss) / (maxLoss - minLoss)) * H;
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#6c8aff';
+  ctx.strokeStyle = '#f0a848';
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -956,14 +956,14 @@ function drawLoss() {
   ctx.lineTo(0, H);
   ctx.closePath();
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, 'rgba(108,138,255,0.15)');
-  grad.addColorStop(1, 'rgba(108,138,255,0)');
+  grad.addColorStop(0, 'rgba(240,168,72,0.15)');
+  grad.addColorStop(1, 'rgba(240,168,72,0)');
   ctx.fillStyle = grad;
   ctx.fill();
 
   // Labels
   ctx.font = '10px "JetBrains Mono", monospace';
-  ctx.fillStyle = '#4a4e5e';
+  ctx.fillStyle = '#5a5264';
   ctx.fillText(`Step ${trainStep}/500`, 10, 16);
   if (lossHistory.length > 0) {
     ctx.fillText(`Loss: ${lossHistory[lossHistory.length - 1].toFixed(3)}`, 10, 30);
