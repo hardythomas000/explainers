@@ -997,7 +997,7 @@ code {
     </div>
     <h1 class="reveal delay-1">Raw G-code in.<br><span class="highlight">Beautiful setup sheets out.</span></h1>
     <p class="hero-sub reveal delay-2">
-      Drop in any .nc file — any CAM software, any post processor, even hand-written — and get a clean, customizable, print-ready setup sheet. Automated. Consistent.
+      Drop in any .nc file, any CAM software, any post processor, even hand-written, and get a clean, customizable, print-ready setup sheet. Automated. Consistent.
     </p>
     <div class="hero-stats reveal delay-3">
       <div class="hero-stat">
@@ -1041,13 +1041,13 @@ code {
       <div class="compare-card bad">
         <div class="badge">The Status Quo</div>
         <h3>Edit, Export, Edit Again</h3>
-        <p>Your CAM exports a setup sheet — but it looks like it was made in 1998 and only covers that one post. Different CAM software? Different machine brand? You're reformatting by hand. Then the machinist tries the setup and wants a change — totally reasonable — but now you're updating the program <em>and</em> rebuilding the sheet. Every revision, every time. Across a shop running two or three different CAM packages on machines from different eras and different manufacturers, it adds up fast. The automated alternatives from third-party resellers? Thousands of dollars.</p>
+        <p>Your CAM exports a setup sheet, but it looks like it was made in 1998 and only covers that one post. Different CAM software? Different machine brand? You're reformatting by hand. Then the machinist tries the setup and wants a change, totally reasonable, but now you're updating the program <em>and</em> rebuilding the sheet. Every revision, every time. Across a shop running two or three different CAM packages on machines from different eras and different manufacturers, it adds up fast. The automated alternatives from third-party resellers? Thousands of dollars.</p>
         <div class="time">10–30 min per revision</div>
       </div>
       <div class="compare-card good">
         <div class="badge">This Tool</div>
         <h3>Regenerate in Seconds</h3>
-        <p>Reads the G-code directly — doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Outputs an interactive HTML page — editable cells, NC code preview, even a 3D STEP viewer. Point it at all your tool libraries — it figures out which one to use from the G-code. Prints clean.</p>
+        <p>Reads the G-code directly. Doesn't matter which CAM generated it. Machinist wants a change? Update the program, hit Generate again, done. Outputs an interactive HTML page with editable cells, NC code preview, even a 3D STEP viewer. Point it at all your tool libraries and it figures out which one to use from the G-code. Prints clean.</p>
         <div class="time">&lt; 3 sec to regenerate</div>
       </div>
     </div>
@@ -1250,11 +1250,11 @@ code {
     <div class="chapter-label reveal">03 — The 3D View</div>
     <h2 class="reveal delay-1">Kill the<br>screengrab</h2>
     <p class="lead reveal delay-2">
-      Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins — right inside the setup sheet.
+      Today, setup sheets show datum locations with pasted screenshots from the CAM software. Flat, low-res, one angle only. If the machinist needs to see the other side? Too bad. The next step: an interactive 3D view of the stock, fixtures, and datum origins, right inside the setup sheet.
     </p>
 
     <div class="callout reveal delay-3" style="border-left-color: var(--accent4);">
-      <strong>How it works:</strong> You export a STEP file of the design stock and fixture geometry from your CAM software. The datum origin is carried with the STEP — and if your CAM exports multiple work coordinate systems (G54, G55, G59...), those come along too. The tool parses the work offsets from the G-code, maps them to the coordinate systems in the STEP, and renders an interactive 3D view. The machinist at the PC can orbit, zoom, and inspect where each datum sits relative to the stock and fixturing — no more guessing from a cropped screenshot. Drag the view below.
+      <strong>How it works:</strong> You export a STEP file of the design stock and fixture geometry from your CAM software. The datum origin is carried with the STEP, and if your CAM exports multiple work coordinate systems (G54, G55, G59...), those come along too. The tool parses the work offsets from the G-code, maps them to the coordinate systems in the STEP, and renders an interactive 3D view. The machinist at the PC can orbit, zoom, and inspect where each datum sits relative to the stock and fixturing. No more guessing from a cropped screenshot. Drag the view below.
     </div>
 
     <!-- 3D viewer -->
@@ -1321,7 +1321,7 @@ code {
     </div>
 
     <div class="callout reveal delay-4">
-      <strong>Just tell it where your libraries live.</strong> Got three machines with three different tool libraries? Point the tool at all of them. It reads the G-code, identifies which machine it's for, and pulls from the right library automatically. No manual selection. The setup sheet still generates even without a library — missing fields are highlighted yellow for manual entry.
+      <strong>Just tell it where your libraries live.</strong> Got three machines with three different tool libraries? Point the tool at all of them. It reads the G-code, identifies which machine it's for, and pulls from the right library automatically. No manual selection. The setup sheet still generates even without a library. Missing fields are highlighted yellow for manual entry.
     </div>
 
     <!-- Interactive tool library matcher -->
@@ -1380,7 +1380,7 @@ code {
     <div class="chapter-label reveal">05 — The Parser</div>
     <h2 class="reveal delay-1">Step through<br>actual G-code</h2>
     <p class="lead reveal delay-2">
-      Click any line to see what the parser does. Watch state accumulate across tool blocks. See exactly when data gets captured — and when it's intentionally skipped.
+      Click any line to see what the parser does. Watch state accumulate across tool blocks. See exactly when data gets captured, and when it's intentionally skipped.
     </p>
 
     <!-- Two-phase explanation -->
