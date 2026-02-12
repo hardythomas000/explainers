@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & GitHub — How They Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0e12;
+  --bg-surface: #121820;
+  --bg-interactive: #1a222d;
+  --text: #e4ecf0;
+  --text-secondary: #8a9baa;
+  --text-dim: #4a5968;
+  --border: #1e2c3a;
+  --accent: #2dd4bf;
+  --accent2: #f87171;
+  --accent3: #a78bfa;
+  --accent4: #fbbf24;
+  --accent-glow: rgba(45, 212, 191, 0.15);
+  --font: 'Inter', -apple-system, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ============ PROGRESS BAR ============ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  z-index: 100; width: 0%; transition: width 0.1s;
+}
+
+/* ============ NAV DOTS ============ */
+.nav-dots {
+  position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 12px; z-index: 50;
+}
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-dim); border: none; cursor: pointer;
+  transition: all 0.3s; position: relative;
+}
+.nav-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.nav-dot::before {
+  content: attr(data-label); position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%); white-space: nowrap; font-size: 0.65em;
+  color: var(--text-secondary); opacity: 0; transition: opacity 0.2s;
+  pointer-events: none; background: var(--bg-surface); padding: 2px 8px;
+  border-radius: 4px; border: 1px solid var(--border);
+}
+.nav-dot:hover::before { opacity: 1; }
+
+/* ============ LAYOUT ============ */
+.chapter {
+  min-height: 100vh; padding: 100px 24px;
+  display: flex; justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+.col-wide { max-width: 720px; width: 100%; }
+
+.chapter-label {
+  font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; color: var(--accent); margin-bottom: 16px;
+}
+.chapter h2 {
+  font-size: clamp(1.8em, 4vw, 2.6em); font-weight: 900;
+  letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 20px;
+}
+.lead {
+  font-size: 1.05em; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 32px;
+}
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============ HERO ============ */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 60px 24px; max-width: 720px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.7em; font-weight: 600; letter-spacing: 1px;
+  color: var(--text-secondary); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-size: clamp(2.2em, 6vw, 3.5em); font-weight: 900;
+  letter-spacing: -0.04em; line-height: 1.08; margin-bottom: 16px;
+}
+.hero-sub {
+  font-size: 1.1em; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 40px; max-width: 520px;
+}
+.hero-stats {
+  display: flex; gap: 32px; flex-wrap: wrap;
+}
+.hero-stat-val {
+  font-size: 1.6em; font-weight: 800; color: var(--text);
+  font-family: var(--mono);
+}
+.hero-stat-label {
+  font-size: 0.7em; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ============ HERO BACKGROUND ============ */
+.hero-bg {
+  position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(45,212,191,0.05) 0%, transparent 70%);
+}
+.hero-grid {
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(30,44,58,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,44,58,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  opacity: 0.4;
+}
+
+/* ============ CALLOUT ============ */
+.callout {
+  background: var(--bg-surface); border-left: 3px solid var(--accent);
+  padding: 20px 24px; border-radius: 0 12px 12px 0;
+  font-size: 0.92em; line-height: 1.7; color: var(--text-secondary);
+  margin: 24px 0;
+}
+.callout strong { color: var(--text); }
+
+/* ============ COMPARE CARDS ============ */
+.compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.compare-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; position: relative;
+}
+.compare-card .badge {
+  font-size: 0.6em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; margin-bottom: 8px; display: block;
+}
+.compare-card.left .badge { color: var(--accent2); }
+.compare-card.right .badge { color: var(--accent); }
+.compare-card h3 { font-size: 1.1em; margin-bottom: 8px; }
+.compare-card p { font-size: 0.82em; color: var(--text-secondary); line-height: 1.6; }
+@media (max-width: 600px) { .compare-row { grid-template-columns: 1fr; } }
+
+/* ============ INTERACTIVE DEMOS ============ */
+.demo-box {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; margin: 24px 0;
+}
+.demo-box h4 {
+  font-size: 0.8em; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+}
+
+/* Buttons in demos */
+.demo-btn {
+  background: var(--bg-interactive); border: 1px solid var(--border);
+  color: var(--text-secondary); padding: 6px 16px; border-radius: 8px;
+  font-size: 12px; cursor: pointer; font-family: var(--font);
+  transition: all 0.2s;
+}
+.demo-btn:hover { border-color: var(--accent); color: var(--accent); }
+.demo-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(45,212,191,0.1); }
+.demo-btn.danger { color: var(--accent2); }
+.demo-btn.danger:hover { border-color: var(--accent2); }
+.demo-btn.green { color: var(--accent); }
+.demo-btn.purple { color: var(--accent3); }
+
+/* File status boxes */
+.file-list {
+  display: flex; flex-direction: column; gap: 6px; margin: 12px 0;
+}
+.file-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-radius: 8px;
+  font-family: var(--mono); font-size: 0.85em;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.file-item .status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.file-item .filename { flex: 1; }
+.file-item .status-label {
+  font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Graph canvas */
+.graph-canvas {
+  width: 100%; height: 320px; position: relative;
+  background: var(--bg); border-radius: 12px; border: 1px solid var(--border);
+  overflow: hidden;
+}
+.graph-canvas canvas { width: 100%; height: 100%; }
+
+/* Terminal display */
+.terminal {
+  background: #0d1117; border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin: 12px 0;
+  font-family: var(--mono); font-size: 0.8em;
+}
+.terminal-header {
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.85em; color: var(--text-dim);
+}
+.terminal-header .dots {
+  display: flex; gap: 5px;
+}
+.terminal-header .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.terminal-body {
+  padding: 14px; line-height: 1.8; overflow-x: auto;
+  max-height: 240px; overflow-y: auto;
+}
+.terminal-body::-webkit-scrollbar { width: 4px; }
+.terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.t-prompt { color: var(--accent); }
+.t-cmd { color: var(--text); }
+.t-output { color: var(--text-dim); }
+.t-add { color: #2dd4bf; }
+.t-del { color: #f87171; }
+.t-file { color: #fbbf24; }
+.t-branch { color: #a78bfa; }
+
+/* Pipeline */
+.pipeline {
+  display: flex; gap: 0; align-items: stretch; margin: 24px 0;
+  overflow-x: auto; padding-bottom: 8px;
+}
+.pipeline::-webkit-scrollbar { height: 4px; }
+.pipeline::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.pipe-stage {
+  flex: 1; min-width: 110px; background: var(--bg-surface);
+  border: 1px solid var(--border); padding: 16px;
+  position: relative; text-align: center;
+}
+.pipe-stage:first-child { border-radius: 12px 0 0 12px; }
+.pipe-stage:last-child { border-radius: 0 12px 12px 0; }
+.pipe-stage::after {
+  content: ''; position: absolute; right: -8px; top: 50%;
+  transform: translateY(-50%); width: 0; height: 0;
+  border: 6px solid transparent; border-left-color: var(--accent);
+  z-index: 2;
+}
+.pipe-stage:last-child::after { display: none; }
+.pipe-stage .pipe-label {
+  font-size: 0.7em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--accent); margin-bottom: 4px;
+}
+.pipe-stage .pipe-desc {
+  font-size: 0.72em; color: var(--text-dim); line-height: 1.5;
+}
+
+/* Three areas diagram */
+.areas-diagram {
+  display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0;
+  align-items: center; margin: 24px 0;
+}
+.area-box {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; text-align: center;
+  transition: all 0.3s;
+}
+.area-box.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 24px rgba(45,212,191,0.1);
+}
+.area-box .area-icon { font-size: 1.6em; margin-bottom: 8px; }
+.area-box .area-name {
+  font-size: 0.75em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 6px;
+}
+.area-box .area-desc {
+  font-size: 0.72em; color: var(--text-dim); line-height: 1.5;
+}
+.area-arrow {
+  font-size: 1.4em; color: var(--text-dim); text-align: center;
+  padding: 0 4px;
+}
+@media (max-width: 600px) {
+  .areas-diagram { grid-template-columns: 1fr; gap: 8px; }
+  .area-arrow { transform: rotate(90deg); padding: 4px 0; }
+}
+
+/* Branch labels */
+.branch-tag {
+  display: inline-block; padding: 2px 10px; border-radius: 6px;
+  font-family: var(--mono); font-size: 0.75em; font-weight: 600;
+  border: 1px solid;
+}
+.branch-tag.main { color: var(--accent); border-color: var(--accent); background: rgba(45,212,191,0.1); }
+.branch-tag.feature { color: var(--accent3); border-color: var(--accent3); background: rgba(167,139,250,0.1); }
+.branch-tag.hotfix { color: var(--accent2); border-color: var(--accent2); background: rgba(248,113,113,0.1); }
+
+/* GitHub section cards */
+.gh-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; margin: 12px 0;
+}
+.gh-card h4 {
+  font-size: 0.9em; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.gh-card p {
+  font-size: 0.85em; color: var(--text-secondary); line-height: 1.6;
+}
+.gh-icon {
+  width: 20px; height: 20px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7em; font-weight: 800;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  padding: 48px 24px; text-align: center;
+  color: var(--text-dim); font-size: 0.75em;
+}
+.footer a { color: var(--text-secondary); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+/* ============ REVEAL ANIMATION ============ */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="hero-bg"></div>
+<div class="hero-grid"></div>
+
+<nav class="nav-dots" id="navDots">
+  <button class="nav-dot active" data-label="Top" onclick="scrollToChapter(0)"></button>
+  <button class="nav-dot" data-label="The Problem" onclick="scrollToChapter(1)"></button>
+  <button class="nav-dot" data-label="Snapshots" onclick="scrollToChapter(2)"></button>
+  <button class="nav-dot" data-label="Three Areas" onclick="scrollToChapter(3)"></button>
+  <button class="nav-dot" data-label="Commits" onclick="scrollToChapter(4)"></button>
+  <button class="nav-dot" data-label="Branches" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="GitHub" onclick="scrollToChapter(6)"></button>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="chapter" id="ch0" style="border-bottom: none; min-height: 100vh;">
+  <div class="hero">
+    <div class="hero-badge reveal">
+      <span class="hero-badge-dot"></span>
+      Git & GitHub &middot; Explainer
+    </div>
+    <h1 class="reveal delay-1">Version control<br><span class="highlight">explained.</span></h1>
+    <p class="hero-sub reveal delay-2">
+      Git tracks every change you make to your code. GitHub lets you share it with the world. This page walks through how both of them actually work, from the ground up.
+    </p>
+    <div class="hero-stats reveal delay-3">
+      <div class="hero-stat">
+        <div class="hero-stat-val">2005</div>
+        <div class="hero-stat-label">Created</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">100M+</div>
+        <div class="hero-stat-label">Developers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">420M+</div>
+        <div class="hero-stat-label">Repos on GitHub</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">1</div>
+        <div class="hero-stat-label">Person: Linus Torvalds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH1: THE PROBLEM ===================== -->
+<section class="chapter" id="ch1">
+  <div class="col-wide">
+    <div class="chapter-label reveal">01 &mdash; The Problem</div>
+    <h2 class="reveal delay-1">We've all been<br><span class="highlight">here</span></h2>
+    <p class="lead reveal delay-2">
+      You're working on something. You make a change. It breaks everything. You want to go back, but you can't remember what it looked like before. Or worse, two people edit the same file at the same time and someone's work gets overwritten. Git solves both of these problems.
+    </p>
+
+    <div class="compare-row reveal delay-3">
+      <div class="compare-card left">
+        <span class="badge">Without Git</span>
+        <h3>The folder nightmare</h3>
+        <p>project_final.zip, project_final_v2.zip, project_ACTUALLY_final.zip, project_final_fixed_tuesday.zip. You've seen this. It's chaos.</p>
+      </div>
+      <div class="compare-card right">
+        <span class="badge">With Git</span>
+        <h3>One folder, full history</h3>
+        <p>Every version is saved inside a hidden folder called .git. You can jump to any point in time, see who changed what and when, and undo anything.</p>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4">
+      <strong>Why was Git created?</strong> Linus Torvalds (the creator of Linux) built Git in 2005 because the tool Linux developers were using became unavailable. He built a replacement in about two weeks. It was designed to be fast, handle huge projects, and let thousands of people work on the same code at once.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH2: SNAPSHOTS ===================== -->
+<section class="chapter" id="ch2">
+  <div class="col-wide">
+    <div class="chapter-label reveal">02 &mdash; Snapshots</div>
+    <h2 class="reveal delay-1">Photos, not<br><span class="highlight">differences</span></h2>
+    <p class="lead reveal delay-2">
+      Most people think Git saves "what changed." It doesn't. Every time you save a version (called a "commit"), Git takes a complete photo of every file in your project. If a file didn't change, Git is smart enough to just point to the old photo instead of taking a new one. So it's fast and doesn't waste space.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="snapshotDemo">
+      <h4>Snapshots vs Diffs</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:16px;">
+        Click through commits to see what Git stores. Notice how unchanged files are linked (dotted line) rather than copied.
+      </p>
+      <div class="graph-canvas" id="snapshotCanvas" style="height:220px;">
+        <canvas id="snapCanvas"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
+        <button class="demo-btn" onclick="setSnapshot(0)">Commit 1</button>
+        <button class="demo-btn" onclick="setSnapshot(1)">Commit 2</button>
+        <button class="demo-btn" onclick="setSnapshot(2)">Commit 3</button>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent3);">
+      <strong>Content-addressable.</strong> Git names each file by its content, not its filename. Two identical files get the same name (a long string of letters and numbers called a hash). This means Git never stores the same content twice, and can instantly tell if something changed.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH3: THREE AREAS ===================== -->
+<section class="chapter" id="ch3">
+  <div class="col-wide">
+    <div class="chapter-label reveal">03 &mdash; The Three Areas</div>
+    <h2 class="reveal delay-1">Where your<br><span class="highlight">files</span> live</h2>
+    <p class="lead reveal delay-2">
+      Git has three places where your files can be. Understanding these three areas is the key to understanding every Git command. Your working directory is where you actually edit files. The staging area is like a shopping cart: you pick what goes into the next save. The repository is where all your saved versions live.
+    </p>
+
+    <div class="areas-diagram reveal delay-3" id="areasViz">
+      <div class="area-box" id="area-wd">
+        <div class="area-name" style="color:var(--accent4)">Working Directory</div>
+        <div class="area-desc">Your files on disk. Edit them however you want. Git sees everything.</div>
+      </div>
+      <div class="area-arrow">→</div>
+      <div class="area-box" id="area-stage">
+        <div class="area-name" style="color:var(--accent)">Staging Area</div>
+        <div class="area-desc">Your shopping cart. Pick which changes go into the next commit.</div>
+      </div>
+      <div class="area-arrow">→</div>
+      <div class="area-box" id="area-repo">
+        <div class="area-name" style="color:var(--accent3)">Repository</div>
+        <div class="area-desc">Permanent storage. Every commit you've ever made lives here.</div>
+      </div>
+    </div>
+
+    <div class="demo-box reveal delay-4" id="statusDemo">
+      <h4>Interactive: git add & commit</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Click the buttons to move files through the three areas, just like the real commands.
+      </p>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="demo-btn" onclick="simEdit()">Edit a file</button>
+        <button class="demo-btn green" onclick="simAdd()">git add</button>
+        <button class="demo-btn purple" onclick="simCommit()">git commit</button>
+        <button class="demo-btn danger" onclick="simReset()">Reset</button>
+      </div>
+      <div id="fileStatusList" class="file-list"></div>
+      <div class="terminal" id="statusTerminal">
+        <div class="terminal-header">
+          <div class="dots">
+            <div class="dot" style="background:#f87171"></div>
+            <div class="dot" style="background:#fbbf24"></div>
+            <div class="dot" style="background:#2dd4bf"></div>
+          </div>
+          <span>terminal</span>
+        </div>
+        <div class="terminal-body" id="termOutput">
+          <span class="t-prompt">$</span> <span class="t-cmd">git status</span><br>
+          <span class="t-output">On branch main<br>nothing to commit, working tree clean</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline reveal delay-4">
+      <div class="pipe-stage">
+        <div class="pipe-label">Edit</div>
+        <div class="pipe-desc">Change your files</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">git add</div>
+        <div class="pipe-desc">Pick what to save</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">git commit</div>
+        <div class="pipe-desc">Save a snapshot</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Repeat</div>
+        <div class="pipe-desc">As many times as you want</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH4: COMMITS ===================== -->
+<section class="chapter" id="ch4">
+  <div class="col-wide">
+    <div class="chapter-label reveal">04 &mdash; Commits</div>
+    <h2 class="reveal delay-1">A chain of<br><span class="highlight">snapshots</span></h2>
+    <p class="lead reveal delay-2">
+      Every commit is a snapshot of your whole project, plus some info: who made it, when, and a short message saying what changed. Each commit points back to its parent (the commit before it). This creates a chain you can follow all the way back to the very first version.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="commitDemo">
+      <h4>Commit Graph</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Click on any commit to see its details. Each circle is a snapshot of the entire project. The arrows point backwards in time to the parent commit.
+      </p>
+      <div class="graph-canvas" id="commitGraphCanvas">
+        <canvas id="commitCanvas"></canvas>
+      </div>
+      <div id="commitDetail" style="margin-top:12px;font-size:0.85em;color:var(--text-dim);font-family:var(--mono);padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);display:none;">
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent4);">
+      <strong>The hash.</strong> Every commit gets a unique ID, like <code style="color:var(--accent);font-size:0.9em;">a3f7b2c</code>. It's calculated from the commit's content, so if even one character changes, the hash is completely different. This makes it impossible to tamper with history without Git noticing. You'll usually see just the first 7 characters.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH5: BRANCHES ===================== -->
+<section class="chapter" id="ch5">
+  <div class="col-wide">
+    <div class="chapter-label reveal">05 &mdash; Branches</div>
+    <h2 class="reveal delay-1">Parallel<br><span class="highlight">timelines</span></h2>
+    <p class="lead reveal delay-2">
+      A branch is just a name that points to a commit. That's it. When you create a new branch, Git doesn't copy anything. It just makes a new pointer. You can work on a feature without touching the main code, and when you're done, merge it back. If it doesn't work out, just delete the branch. The main code was never at risk.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="branchDemo">
+      <h4>Branch Simulator</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Create branches, add commits, and watch the graph grow. Branches let multiple people (or ideas) develop side by side.
+      </p>
+      <div class="graph-canvas" id="branchGraphCanvas" style="height:280px;">
+        <canvas id="branchCanvas"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
+        <button class="demo-btn green" onclick="branchCommit('main')">Commit to main</button>
+        <button class="demo-btn purple" onclick="branchCreate()">Create branch</button>
+        <button class="demo-btn" style="color:var(--accent3)" onclick="branchCommit('feature')">Commit to feature</button>
+        <button class="demo-btn" style="color:var(--accent4)" onclick="branchMerge()">Merge</button>
+        <button class="demo-btn danger" onclick="branchReset()">Reset</button>
+      </div>
+      <div id="branchInfo" style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <span class="branch-tag main">main</span>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent2);">
+      <strong>What about conflicts?</strong> If two branches change the same line in the same file, Git can't decide which version to keep. It stops and asks you to choose. This is called a merge conflict. It sounds scary, but it's just Git being careful. You open the file, pick the version you want, save it, and you're done.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH6: GITHUB ===================== -->
+<section class="chapter" id="ch6">
+  <div class="col-wide">
+    <div class="chapter-label reveal">06 &mdash; GitHub</div>
+    <h2 class="reveal delay-1">The social<br><span class="highlight">layer</span></h2>
+    <p class="lead reveal delay-2">
+      Git works on your computer. GitHub is a website that stores a copy of your Git repository online. This lets you back up your work, share it with others, and collaborate. GitHub added some powerful features on top of Git: pull requests (asking to merge your changes), issues (tracking bugs and tasks), and actions (automating things like testing).
+    </p>
+
+    <div class="reveal delay-3">
+      <div class="gh-card">
+        <h4><span class="gh-icon" style="background:rgba(45,212,191,0.15);color:var(--accent);">↑</span> Push</h4>
+        <p>Upload your commits from your computer to GitHub. Your code is now backed up online and visible to others (if the repo is public).</p>
+      </div>
+      <div class="gh-card">
+        <h4><span class="gh-icon" style="background:rgba(167,139,250,0.15);color:var(--accent3);">↓</span> Pull</h4>
+        <p>Download new commits from GitHub to your computer. If someone else pushed changes, this is how you get them.</p>
+      </div>
+      <div class="gh-card">
+        <h4><span class="gh-icon" style="background:rgba(251,191,36,0.15);color:var(--accent4);">⑂</span> Fork</h4>
+        <p>Make your own copy of someone else's repository. You can change anything you want without affecting the original. If you make something good, you can offer it back.</p>
+      </div>
+      <div class="gh-card">
+        <h4><span class="gh-icon" style="background:rgba(248,113,113,0.15);color:var(--accent2);">⇌</span> Pull Request</h4>
+        <p>A polite way of saying "I made some changes on my branch, could you review them and merge them into the main code?" Other people can comment, suggest fixes, and approve before anything gets merged.</p>
+      </div>
+    </div>
+
+    <div class="demo-box reveal delay-4" id="ghFlowDemo">
+      <h4>The GitHub Flow</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:16px;">
+        This is the standard workflow used by most teams. Click through each step to see how code goes from an idea to a shipped feature.
+      </p>
+      <div id="ghFlowSteps" style="margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="demo-btn" onclick="ghFlowPrev()">← Back</button>
+        <button class="demo-btn green" onclick="ghFlowNext()">Next →</button>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent);">
+      <strong>Git is not GitHub.</strong> Git is the tool that runs on your computer. GitHub is a website that hosts Git repositories. There are alternatives to GitHub (GitLab, Bitbucket) but they all use Git underneath. You can use Git without GitHub, but you can't use GitHub without Git.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<div class="footer">
+  <p>Explainer by Hardy Thomas &middot; Built with Claude</p>
+</div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+// ============ SCROLL & REVEAL ============
+const chapters = document.querySelectorAll('.chapter');
+const dots = document.querySelectorAll('.nav-dot');
+const progressBar = document.getElementById('progressBar');
+
+function scrollToChapter(i) {
+  chapters[i].scrollIntoView({ behavior: 'smooth' });
+}
+
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (scrollY / docH * 100) + '%';
+
+  let active = 0;
+  chapters.forEach((ch, i) => {
+    const rect = ch.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.5) active = i;
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === active));
+});
+
+// ============ SNAPSHOT DEMO ============
+let currentSnap = 0;
+const snapFiles = [
+  // Commit 1
+  [
+    { name: 'index.html', color: '#2dd4bf', changed: true },
+    { name: 'style.css', color: '#a78bfa', changed: true },
+    { name: 'app.js', color: '#fbbf24', changed: true },
+  ],
+  // Commit 2: only app.js changed
+  [
+    { name: 'index.html', color: '#2dd4bf', changed: false },
+    { name: 'style.css', color: '#a78bfa', changed: false },
+    { name: 'app.js', color: '#fbbf24', changed: true },
+  ],
+  // Commit 3: index.html and style.css changed
+  [
+    { name: 'index.html', color: '#2dd4bf', changed: true },
+    { name: 'style.css', color: '#a78bfa', changed: true },
+    { name: 'app.js', color: '#fbbf24', changed: false },
+  ],
+];
+
+function drawSnapshots() {
+  const canvas = document.getElementById('snapCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(2, 2);
+
+  ctx.clearRect(0, 0, W, H);
+
+  const commitW = W / 3;
+  const fileH = 28;
+  const startY = 40;
+
+  for (let c = 0; c < 3; c++) {
+    const x = c * commitW + commitW / 2;
+    const isActive = c === currentSnap;
+
+    // Commit label
+    ctx.font = `${isActive ? '700' : '500'} 11px "JetBrains Mono", monospace`;
+    ctx.fillStyle = isActive ? '#2dd4bf' : '#4a5968';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Commit ${c + 1}`, x, 24);
+
+    // Files
+    for (let f = 0; f < 3; f++) {
+      const file = snapFiles[c][f];
+      const fy = startY + f * (fileH + 8);
+      const fw = 90;
+      const fx = x - fw / 2;
+
+      if (file.changed) {
+        // Solid box: new snapshot
+        ctx.fillStyle = isActive ? file.color + '33' : file.color + '15';
+        ctx.strokeStyle = isActive ? file.color : file.color + '44';
+        ctx.lineWidth = isActive ? 1.5 : 1;
+        ctx.beginPath();
+        ctx.roundRect(fx, fy, fw, fileH, 6);
+        ctx.fill(); ctx.stroke();
+
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.fillStyle = isActive ? file.color : file.color + '88';
+        ctx.textAlign = 'center';
+        ctx.fillText(file.name, x, fy + 17);
+      } else {
+        // Dashed box: linked to previous
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = isActive ? file.color + '66' : file.color + '22';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(fx, fy, fw, fileH, 6);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.fillStyle = isActive ? '#4a5968' : '#2a3540';
+        ctx.textAlign = 'center';
+        ctx.fillText(file.name, x, fy + 17);
+
+        // Draw link arrow to previous commit
+        if (c > 0) {
+          const prevX = (c - 1) * commitW + commitW / 2 + fw / 2 + 4;
+          const curX = fx - 4;
+          const arrowY = fy + fileH / 2;
+          ctx.setLineDash([2, 2]);
+          ctx.strokeStyle = file.color + '33';
+          ctx.beginPath();
+          ctx.moveTo(curX, arrowY);
+          ctx.lineTo(prevX, arrowY);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
+    // Arrow between commits
+    if (c < 2) {
+      const ax = (c + 1) * commitW;
+      ctx.fillStyle = '#4a5968';
+      ctx.beginPath();
+      ctx.moveTo(ax - 12, startY + 40);
+      ctx.lineTo(ax + 2, startY + 40);
+      ctx.lineTo(ax - 4, startY + 36);
+      ctx.moveTo(ax + 2, startY + 40);
+      ctx.lineTo(ax - 4, startY + 44);
+      ctx.strokeStyle = '#4a5968';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+}
+
+function setSnapshot(n) {
+  currentSnap = n;
+  drawSnapshots();
+}
+setTimeout(drawSnapshots, 100);
+
+// ============ FILE STATUS / GIT ADD & COMMIT DEMO ============
+let files = [
+  { name: 'index.html', status: 'clean' },
+  { name: 'style.css', status: 'clean' },
+  { name: 'app.js', status: 'clean' },
+];
+let termLines = [];
+const statusColors = {
+  clean: { dot: '#4a5968', label: 'clean', labelColor: '#4a5968' },
+  modified: { dot: '#fbbf24', label: 'modified', labelColor: '#fbbf24' },
+  staged: { dot: '#2dd4bf', label: 'staged', labelColor: '#2dd4bf' },
+  committed: { dot: '#a78bfa', label: 'committed', labelColor: '#a78bfa' },
+};
+
+function renderFileStatus() {
+  const list = document.getElementById('fileStatusList');
+  list.innerHTML = '';
+  for (const f of files) {
+    const s = statusColors[f.status];
+    list.innerHTML += `
+      <div class="file-item">
+        <div class="status-dot" style="background:${s.dot}"></div>
+        <span class="filename">${f.name}</span>
+        <span class="status-label" style="color:${s.labelColor}">${s.label}</span>
+      </div>`;
+  }
+}
+
+function addTermLine(prompt, cmd, output) {
+  termLines.push({ prompt, cmd, output });
+  if (termLines.length > 6) termLines.shift();
+  const el = document.getElementById('termOutput');
+  let html = '';
+  for (const l of termLines) {
+    html += `<span class="t-prompt">${l.prompt}</span> <span class="t-cmd">${l.cmd}</span><br>`;
+    if (l.output) html += `<span class="t-output">${l.output}</span><br>`;
+  }
+  el.innerHTML = html;
+  el.scrollTop = el.scrollHeight;
+}
+
+function simEdit() {
+  // Pick a random clean file, or any file
+  const candidates = files.filter(f => f.status === 'clean' || f.status === 'committed');
+  if (candidates.length === 0) {
+    addTermLine('$', 'vim ...', 'All files already modified or staged.');
+    return;
+  }
+  const f = candidates[Math.floor(Math.random() * candidates.length)];
+  f.status = 'modified';
+  addTermLine('$', `vim ${f.name}`, `Edited ${f.name}`);
+  renderFileStatus();
+  highlightArea('area-wd');
+}
+
+function simAdd() {
+  const modified = files.filter(f => f.status === 'modified');
+  if (modified.length === 0) {
+    addTermLine('$', 'git add .', 'Nothing to stage. Edit a file first.');
+    return;
+  }
+  const names = modified.map(f => f.name);
+  modified.forEach(f => f.status = 'staged');
+  addTermLine('$', 'git add .', `Staged: ${names.join(', ')}`);
+  renderFileStatus();
+  highlightArea('area-stage');
+}
+
+function simCommit() {
+  const staged = files.filter(f => f.status === 'staged');
+  if (staged.length === 0) {
+    addTermLine('$', 'git commit', 'Nothing staged. Use git add first.');
+    return;
+  }
+  const names = staged.map(f => f.name);
+  staged.forEach(f => f.status = 'committed');
+  const hash = Math.random().toString(36).substring(2, 9);
+  addTermLine('$', 'git commit -m "update"', `[main ${hash}] update<br>&nbsp;${names.length} file(s) changed`);
+  renderFileStatus();
+  highlightArea('area-repo');
+}
+
+function simReset() {
+  files.forEach(f => f.status = 'clean');
+  termLines = [];
+  addTermLine('$', 'git status', 'On branch main<br>nothing to commit, working tree clean');
+  renderFileStatus();
+  document.querySelectorAll('.area-box').forEach(b => b.classList.remove('active'));
+}
+
+function highlightArea(id) {
+  document.querySelectorAll('.area-box').forEach(b => b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  setTimeout(() => document.getElementById(id)?.classList.remove('active'), 1500);
+}
+
+renderFileStatus();
+addTermLine('$', 'git status', 'On branch main<br>nothing to commit, working tree clean');
+
+// ============ COMMIT GRAPH DEMO ============
+const commitData = [
+  { hash: 'a1b2c3d', msg: 'Initial commit', author: 'hardy', date: 'Jan 15', files: 'index.html, style.css' },
+  { hash: 'e4f5g6h', msg: 'Add navigation bar', author: 'hardy', date: 'Jan 16', files: 'index.html, nav.js' },
+  { hash: 'i7j8k9l', msg: 'Fix responsive layout', author: 'alice', date: 'Jan 17', files: 'style.css' },
+  { hash: 'm0n1o2p', msg: 'Add contact form', author: 'hardy', date: 'Jan 18', files: 'contact.html, form.js' },
+  { hash: 'q3r4s5t', msg: 'Improve accessibility', author: 'bob', date: 'Jan 19', files: 'index.html, style.css, nav.js' },
+];
+let selectedCommit = -1;
+
+function drawCommitGraph() {
+  const canvas = document.getElementById('commitCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(2, 2);
+  ctx.clearRect(0, 0, W, H);
+
+  const nodeR = 16;
+  const spacing = (W - 80) / (commitData.length - 1);
+  const cy = H / 2;
+
+  // Draw connecting lines
+  for (let i = 1; i < commitData.length; i++) {
+    const x1 = 40 + (i - 1) * spacing;
+    const x2 = 40 + i * spacing;
+    ctx.beginPath();
+    ctx.moveTo(x1 + nodeR, cy);
+    ctx.lineTo(x2 - nodeR, cy);
+    ctx.strokeStyle = '#1e2c3a';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Arrow
+    ctx.fillStyle = '#1e2c3a';
+    ctx.beginPath();
+    const ax = x2 - nodeR - 2;
+    ctx.moveTo(ax, cy);
+    ctx.lineTo(ax - 6, cy - 4);
+    ctx.lineTo(ax - 6, cy + 4);
+    ctx.fill();
+  }
+
+  // Draw nodes
+  for (let i = 0; i < commitData.length; i++) {
+    const x = 40 + i * spacing;
+    const isSelected = i === selectedCommit;
+    const isLast = i === commitData.length - 1;
+
+    // Node circle
+    ctx.beginPath();
+    ctx.arc(x, cy, nodeR, 0, Math.PI * 2);
+    ctx.fillStyle = isSelected ? '#2dd4bf22' : '#121820';
+    ctx.fill();
+    ctx.strokeStyle = isSelected ? '#2dd4bf' : isLast ? '#a78bfa' : '#4a5968';
+    ctx.lineWidth = isSelected ? 2.5 : 2;
+    ctx.stroke();
+
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(x, cy, nodeR + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = '#2dd4bf33';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Hash label above
+    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = isSelected ? '#2dd4bf' : '#4a5968';
+    ctx.fillText(commitData[i].hash.substring(0, 7), x, cy - nodeR - 8);
+
+    // Message below
+    ctx.font = '9px "Inter", sans-serif';
+    ctx.fillStyle = isSelected ? '#e4ecf0' : '#4a5968';
+    const msg = commitData[i].msg.length > 18 ? commitData[i].msg.substring(0, 16) + '..' : commitData[i].msg;
+    ctx.fillText(msg, x, cy + nodeR + 16);
+
+    // HEAD/main label on last
+    if (isLast) {
+      ctx.font = 'bold 9px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#a78bfa';
+      ctx.fillText('HEAD → main', x, cy + nodeR + 32);
+    }
+  }
+}
+
+document.getElementById('commitCanvas').addEventListener('click', function(e) {
+  const rect = this.getBoundingClientRect();
+  const mx = (e.clientX - rect.left);
+  const W = rect.width;
+  const spacing = (W - 80) / (commitData.length - 1);
+
+  for (let i = 0; i < commitData.length; i++) {
+    const x = 40 + i * spacing;
+    if (Math.abs(mx - x) < 20) {
+      selectedCommit = i;
+      drawCommitGraph();
+      const c = commitData[i];
+      document.getElementById('commitDetail').style.display = 'block';
+      document.getElementById('commitDetail').innerHTML = `
+        <span style="color:var(--accent)">commit ${c.hash}</span><br>
+        <span style="color:var(--text-dim)">Author:</span> <span style="color:var(--text-secondary)">${c.author}</span><br>
+        <span style="color:var(--text-dim)">Date:</span> <span style="color:var(--text-secondary)">${c.date}</span><br>
+        <span style="color:var(--text-dim)">Message:</span> <span style="color:var(--text)">${c.msg}</span><br>
+        <span style="color:var(--text-dim)">Changed:</span> <span style="color:var(--accent4)">${c.files}</span>
+      `;
+      return;
+    }
+  }
+});
+
+setTimeout(drawCommitGraph, 100);
+
+// ============ BRANCH SIMULATOR ============
+let branchState = {
+  main: [
+    { hash: 'a1b', x: 0, y: 0, msg: 'init' },
+    { hash: 'e4f', x: 1, y: 0, msg: 'add nav' },
+    { hash: 'i7j', x: 2, y: 0, msg: 'fix css' },
+  ],
+  feature: [],
+  featureBranch: false,
+  merged: false,
+  branchPoint: 2,
+};
+
+function drawBranches() {
+  const canvas = document.getElementById('branchCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(2, 2);
+  ctx.clearRect(0, 0, W, H);
+
+  const nodeR = 14;
+  const mainY = H * 0.38;
+  const featureY = H * 0.7;
+  const startX = 50;
+  const step = 70;
+
+  // Draw main branch
+  const mainNodes = branchState.main;
+  for (let i = 0; i < mainNodes.length; i++) {
+    const x = startX + i * step;
+
+    // Connect to previous
+    if (i > 0) {
+      ctx.beginPath();
+      ctx.moveTo(startX + (i - 1) * step + nodeR, mainY);
+      ctx.lineTo(x - nodeR, mainY);
+      ctx.strokeStyle = '#2dd4bf44';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Node
+    ctx.beginPath();
+    ctx.arc(x, mainY, nodeR, 0, Math.PI * 2);
+    ctx.fillStyle = '#121820';
+    ctx.strokeStyle = '#2dd4bf';
+    ctx.lineWidth = 2;
+    ctx.fill(); ctx.stroke();
+
+    ctx.font = '8px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#2dd4bf';
+    ctx.fillText(mainNodes[i].hash, x, mainY + 3);
+
+    // Label
+    ctx.font = '8px "Inter", sans-serif';
+    ctx.fillStyle = '#4a5968';
+    ctx.fillText(mainNodes[i].msg, x, mainY - nodeR - 6);
+  }
+
+  // Main branch label
+  if (mainNodes.length > 0) {
+    const lastMainX = startX + (mainNodes.length - 1) * step;
+    ctx.font = 'bold 10px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#2dd4bf';
+    ctx.textAlign = 'left';
+    ctx.fillText('main', lastMainX + nodeR + 8, mainY + 4);
+  }
+
+  // Draw feature branch
+  if (branchState.featureBranch) {
+    const branchX = startX + branchState.branchPoint * step;
+    const featureNodes = branchState.feature;
+
+    // Draw branch-off line
+    if (featureNodes.length > 0) {
+      const firstFeatureX = branchX + step;
+      ctx.beginPath();
+      ctx.moveTo(branchX + nodeR * 0.7, mainY + nodeR * 0.7);
+      ctx.bezierCurveTo(
+        branchX + step * 0.5, mainY + (featureY - mainY) * 0.5,
+        branchX + step * 0.5, featureY,
+        firstFeatureX - nodeR, featureY
+      );
+      ctx.strokeStyle = '#a78bfa44';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Feature commit nodes
+    for (let i = 0; i < featureNodes.length; i++) {
+      const x = branchX + (i + 1) * step;
+
+      if (i > 0) {
+        ctx.beginPath();
+        ctx.moveTo(branchX + i * step + nodeR, featureY);
+        ctx.lineTo(x - nodeR, featureY);
+        ctx.strokeStyle = '#a78bfa44';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.arc(x, featureY, nodeR, 0, Math.PI * 2);
+      ctx.fillStyle = '#121820';
+      ctx.strokeStyle = '#a78bfa';
+      ctx.lineWidth = 2;
+      ctx.fill(); ctx.stroke();
+
+      ctx.font = '8px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#a78bfa';
+      ctx.fillText(featureNodes[i].hash, x, featureY + 3);
+
+      ctx.font = '8px "Inter", sans-serif';
+      ctx.fillStyle = '#4a5968';
+      ctx.fillText(featureNodes[i].msg, x, featureY - nodeR - 6);
+    }
+
+    // Feature branch label
+    if (featureNodes.length > 0) {
+      const lastFeatX = branchX + featureNodes.length * step;
+      ctx.font = 'bold 10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#a78bfa';
+      ctx.textAlign = 'left';
+      ctx.fillText('feature', lastFeatX + nodeR + 8, featureY + 4);
+    } else {
+      ctx.font = '9px "Inter", sans-serif';
+      ctx.fillStyle = '#a78bfa88';
+      ctx.textAlign = 'center';
+      ctx.fillText('branch created (no commits yet)', branchX + step, featureY);
+    }
+
+    // Draw merge line
+    if (branchState.merged && featureNodes.length > 0) {
+      const lastFeatX = branchX + featureNodes.length * step;
+      const mergeX = startX + (mainNodes.length - 1) * step;
+
+      ctx.beginPath();
+      ctx.moveTo(lastFeatX + nodeR * 0.7, featureY - nodeR * 0.7);
+      ctx.bezierCurveTo(
+        lastFeatX + step * 0.5, featureY - (featureY - mainY) * 0.5,
+        mergeX - step * 0.3, mainY,
+        mergeX - nodeR, mainY
+      );
+      ctx.strokeStyle = '#fbbf2444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Merge commit indicator
+      ctx.beginPath();
+      ctx.arc(mergeX, mainY, nodeR, 0, Math.PI * 2);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+  }
+}
+
+function randomHash() {
+  return Math.random().toString(36).substring(2, 5);
+}
+
+const commitMsgs = ['update', 'fix bug', 'refactor', 'add tests', 'cleanup', 'docs', 'perf', 'style'];
+
+function branchCommit(target) {
+  const msg = commitMsgs[Math.floor(Math.random() * commitMsgs.length)];
+  if (target === 'main') {
+    branchState.main.push({ hash: randomHash(), msg, x: branchState.main.length, y: 0 });
+    if (!branchState.featureBranch) branchState.branchPoint = branchState.main.length - 1;
+  } else if (target === 'feature' && branchState.featureBranch) {
+    branchState.feature.push({ hash: randomHash(), msg, x: branchState.feature.length, y: 1 });
+  }
+  branchState.merged = false;
+  drawBranches();
+  updateBranchInfo();
+}
+
+function branchCreate() {
+  if (branchState.featureBranch) return;
+  branchState.featureBranch = true;
+  branchState.branchPoint = branchState.main.length - 1;
+  branchState.feature = [];
+  branchState.merged = false;
+  drawBranches();
+  updateBranchInfo();
+}
+
+function branchMerge() {
+  if (!branchState.featureBranch || branchState.feature.length === 0 || branchState.merged) return;
+  branchState.merged = true;
+  branchState.main.push({ hash: randomHash(), msg: 'merge', x: branchState.main.length, y: 0 });
+  drawBranches();
+  updateBranchInfo();
+}
+
+function branchReset() {
+  branchState = {
+    main: [
+      { hash: 'a1b', x: 0, y: 0, msg: 'init' },
+      { hash: 'e4f', x: 1, y: 0, msg: 'add nav' },
+      { hash: 'i7j', x: 2, y: 0, msg: 'fix css' },
+    ],
+    feature: [],
+    featureBranch: false,
+    merged: false,
+    branchPoint: 2,
+  };
+  drawBranches();
+  updateBranchInfo();
+}
+
+function updateBranchInfo() {
+  const el = document.getElementById('branchInfo');
+  let html = '<span class="branch-tag main">main</span>';
+  if (branchState.featureBranch) {
+    html += '<span class="branch-tag feature">feature</span>';
+  }
+  if (branchState.merged) {
+    html += '<span style="font-size:0.75em;color:var(--accent4);font-family:var(--mono);">merged!</span>';
+  }
+  el.innerHTML = html;
+}
+
+setTimeout(drawBranches, 100);
+
+// ============ GITHUB FLOW DEMO ============
+const ghSteps = [
+  {
+    title: '1. Create a Branch',
+    desc: 'You want to add a feature. Instead of editing the main code directly, you create a branch. This gives you a safe space to experiment.',
+    terminal: '<span class="t-prompt">$</span> <span class="t-cmd">git checkout -b add-dark-mode</span><br><span class="t-output">Switched to a new branch \'add-dark-mode\'</span>',
+    color: '#a78bfa',
+  },
+  {
+    title: '2. Make Commits',
+    desc: 'You write code, test it, and save your progress with commits. Each commit has a message explaining what you did.',
+    terminal: '<span class="t-prompt">$</span> <span class="t-cmd">git add .</span><br><span class="t-prompt">$</span> <span class="t-cmd">git commit -m "Add dark mode toggle"</span><br><span class="t-output">[add-dark-mode f3a9c21] Add dark mode toggle<br>&nbsp;3 files changed, 42 insertions(+), 8 deletions(-)</span>',
+    color: '#2dd4bf',
+  },
+  {
+    title: '3. Push to GitHub',
+    desc: 'Upload your branch to GitHub so others can see your work. Your code is now online but not yet part of the main project.',
+    terminal: '<span class="t-prompt">$</span> <span class="t-cmd">git push -u origin add-dark-mode</span><br><span class="t-output">To github.com:you/project.git<br>&nbsp;* [new branch] add-dark-mode → add-dark-mode</span>',
+    color: '#fbbf24',
+  },
+  {
+    title: '4. Open a Pull Request',
+    desc: 'On GitHub, you click "New pull request." You write a description of what you changed and why. Teammates review your code, leave comments, and suggest changes.',
+    terminal: '<span class="t-output" style="color:#a78bfa">✓ Pull Request #42 opened</span><br><span class="t-output">"Add dark mode toggle"</span><br><span class="t-output">Reviewers: @alice, @bob</span><br><span class="t-output" style="color:#2dd4bf">+42 lines</span> <span class="t-output" style="color:#f87171">-8 lines</span>',
+    color: '#a78bfa',
+  },
+  {
+    title: '5. Merge',
+    desc: 'Once approved, you click "Merge." Your changes become part of the main code. The branch can be deleted since its work is done.',
+    terminal: '<span class="t-output" style="color:#2dd4bf">✓ Pull Request #42 merged</span><br><span class="t-output">Branch add-dark-mode deleted.</span><br><span class="t-output">main is now up to date.</span>',
+    color: '#2dd4bf',
+  },
+];
+let ghFlowStep = 0;
+
+function renderGhFlow() {
+  const container = document.getElementById('ghFlowSteps');
+  const s = ghSteps[ghFlowStep];
+
+  // Step indicators
+  let dotsHtml = '<div style="display:flex;gap:6px;margin-bottom:16px;justify-content:center;">';
+  for (let i = 0; i < ghSteps.length; i++) {
+    const active = i === ghFlowStep;
+    const done = i < ghFlowStep;
+    dotsHtml += `<div style="width:${active ? '24px' : '8px'};height:8px;border-radius:4px;background:${active ? s.color : done ? s.color + '44' : '#1e2c3a'};transition:all 0.3s;"></div>`;
+  }
+  dotsHtml += '</div>';
+
+  container.innerHTML = `
+    ${dotsHtml}
+    <div style="text-align:center;margin-bottom:16px;">
+      <h4 style="font-size:1em;color:${s.color};margin-bottom:6px;">${s.title}</h4>
+      <p style="font-size:0.85em;color:var(--text-secondary);line-height:1.6;max-width:500px;margin:0 auto;">${s.desc}</p>
+    </div>
+    <div class="terminal">
+      <div class="terminal-header">
+        <div class="dots">
+          <div class="dot" style="background:#f87171"></div>
+          <div class="dot" style="background:#fbbf24"></div>
+          <div class="dot" style="background:#2dd4bf"></div>
+        </div>
+        <span>terminal</span>
+      </div>
+      <div class="terminal-body">${s.terminal}</div>
+    </div>
+  `;
+}
+
+function ghFlowNext() {
+  if (ghFlowStep < ghSteps.length - 1) { ghFlowStep++; renderGhFlow(); }
+}
+
+function ghFlowPrev() {
+  if (ghFlowStep > 0) { ghFlowStep--; renderGhFlow(); }
+}
+
+renderGhFlow();
+
+// ============ RESIZE HANDLERS ============
+window.addEventListener('resize', () => {
+  drawSnapshots();
+  drawCommitGraph();
+  drawBranches();
+});
+</script>
+
+</body>
+</html>
