@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>microGPT — How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #08090c;
+  --bg-surface: #13151e;
+  --bg-interactive: #181b27;
+  --text: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-dim: #4a4e5e;
+  --border: #1e2133;
+  --accent: #6c8aff;
+  --accent2: #ff6ac1;
+  --accent3: #69ff94;
+  --accent4: #ffd866;
+  --accent-glow: rgba(108, 138, 255, 0.15);
+  --font: 'Inter', -apple-system, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ============ PROGRESS BAR ============ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 100; width: 0%; transition: width 0.1s;
+}
+
+/* ============ NAV DOTS ============ */
+.nav-dots {
+  position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 12px; z-index: 50;
+}
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-dim); border: none; cursor: pointer;
+  transition: all 0.3s; position: relative;
+}
+.nav-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.nav-dot::before {
+  content: attr(data-label); position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%); white-space: nowrap; font-size: 0.65em;
+  color: var(--text-secondary); opacity: 0; transition: opacity 0.2s;
+  pointer-events: none; background: var(--bg-surface); padding: 2px 8px;
+  border-radius: 4px; border: 1px solid var(--border);
+}
+.nav-dot:hover::before { opacity: 1; }
+
+/* ============ LAYOUT ============ */
+.chapter {
+  min-height: 100vh; padding: 100px 24px;
+  display: flex; justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+.col-wide { max-width: 720px; width: 100%; }
+
+.chapter-label {
+  font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; color: var(--accent); margin-bottom: 16px;
+}
+.chapter h2 {
+  font-size: clamp(1.8em, 4vw, 2.6em); font-weight: 900;
+  letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 20px;
+}
+.lead {
+  font-size: 1.05em; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 32px;
+}
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============ HERO ============ */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 60px 24px; max-width: 720px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.7em; font-weight: 600; letter-spacing: 1px;
+  color: var(--text-secondary); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent3); animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-size: clamp(2.2em, 6vw, 3.5em); font-weight: 900;
+  letter-spacing: -0.04em; line-height: 1.08; margin-bottom: 16px;
+}
+.hero-sub {
+  font-size: 1.1em; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 40px; max-width: 520px;
+}
+.hero-stats {
+  display: flex; gap: 32px; flex-wrap: wrap;
+}
+.hero-stat-val {
+  font-size: 1.6em; font-weight: 800; color: var(--text);
+  font-family: var(--mono);
+}
+.hero-stat-label {
+  font-size: 0.7em; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ============ HERO BACKGROUND ============ */
+.hero-bg {
+  position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(108,138,255,0.06) 0%, transparent 70%);
+}
+.hero-grid {
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(30,33,51,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,33,51,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 50%, black 20%, transparent 70%);
+  opacity: 0.4;
+}
+
+/* ============ CALLOUT ============ */
+.callout {
+  background: var(--bg-surface); border-left: 3px solid var(--accent);
+  padding: 20px 24px; border-radius: 0 12px 12px 0;
+  font-size: 0.92em; line-height: 1.7; color: var(--text-secondary);
+  margin: 24px 0;
+}
+.callout strong { color: var(--text); }
+
+/* ============ COMPARE CARDS ============ */
+.compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.compare-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; position: relative;
+}
+.compare-card .badge {
+  font-size: 0.6em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; margin-bottom: 8px; display: block;
+}
+.compare-card.bad .badge { color: var(--accent2); }
+.compare-card.good .badge { color: var(--accent3); }
+.compare-card h3 { font-size: 1.1em; margin-bottom: 8px; }
+.compare-card p { font-size: 0.82em; color: var(--text-secondary); line-height: 1.6; }
+@media (max-width: 600px) { .compare-row { grid-template-columns: 1fr; } }
+
+/* ============ INTERACTIVE CODE STEPPER ============ */
+.code-explorer {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; margin: 24px 0;
+}
+.code-explorer-header {
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.75em; color: var(--text-dim);
+}
+.code-explorer-header .filename {
+  font-family: var(--mono); color: var(--text-secondary);
+}
+.code-explorer-header .controls {
+  margin-left: auto; display: flex; gap: 6px;
+}
+.code-explorer-header .controls button {
+  background: var(--bg-interactive); border: 1px solid var(--border);
+  color: var(--text-secondary); padding: 4px 12px; border-radius: 6px;
+  font-size: 11px; cursor: pointer; font-family: var(--mono);
+  transition: all 0.2s;
+}
+.code-explorer-header .controls button:hover {
+  border-color: var(--accent); color: var(--accent);
+}
+.code-explorer-header .controls button.playing {
+  border-color: var(--accent3); color: var(--accent3);
+}
+.code-body {
+  display: grid; grid-template-columns: 1fr 300px;
+  max-height: 500px;
+}
+.code-lines {
+  overflow-y: auto; padding: 12px 0; font-family: var(--mono);
+  font-size: 12px; line-height: 1.8; counter-reset: line;
+}
+.code-lines::-webkit-scrollbar { width: 4px; }
+.code-lines::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.code-line {
+  padding: 0 16px 0 48px; position: relative; cursor: pointer;
+  transition: background 0.15s; white-space: pre; min-height: 1.8em;
+}
+.code-line::before {
+  content: attr(data-n); position: absolute; left: 8px; width: 32px;
+  text-align: right; color: var(--text-dim); font-size: 10px;
+}
+.code-line:hover { background: rgba(108,138,255,0.05); }
+.code-line.active {
+  background: rgba(108,138,255,0.12);
+  border-left: 2px solid var(--accent);
+}
+.code-line.active::before { color: var(--accent); }
+
+/* Syntax colors */
+.syn-kw { color: #ff6ac1; }
+.syn-fn { color: #6c8aff; }
+.syn-str { color: #69ff94; }
+.syn-num { color: #ffd866; }
+.syn-cmt { color: #4a4e5e; font-style: italic; }
+.syn-op { color: #ff6ac1; }
+.syn-cls { color: #ffa657; }
+.syn-self { color: #ff6ac1; font-style: italic; }
+.syn-dec { color: #69ff94; }
+
+/* Explanation panel */
+.code-explain {
+  border-left: 1px solid var(--border); padding: 16px 20px;
+  overflow-y: auto; font-size: 0.85em; line-height: 1.7;
+  color: var(--text-secondary);
+}
+.code-explain::-webkit-scrollbar { width: 4px; }
+.code-explain::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.code-explain h4 {
+  font-size: 0.85em; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.code-explain .tag {
+  display: inline-block; font-size: 0.65em; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; margin-right: 6px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.tag-data { background: #ffd86622; color: var(--accent4); }
+.tag-math { background: #6c8aff22; color: var(--accent); }
+.tag-arch { background: #ff6ac122; color: var(--accent2); }
+.tag-train { background: #69ff9422; color: var(--accent3); }
+@media (max-width: 700px) {
+  .code-body { grid-template-columns: 1fr; max-height: none; }
+  .code-explain { border-left: none; border-top: 1px solid var(--border); max-height: 200px; }
+}
+
+/* ============ INTERACTIVE DEMOS ============ */
+.demo-box {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; margin: 24px 0;
+}
+.demo-box h4 {
+  font-size: 0.8em; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+}
+
+/* Computation graph */
+.comp-graph {
+  width: 100%; height: 300px; position: relative;
+  background: var(--bg); border-radius: 12px; border: 1px solid var(--border);
+  overflow: hidden;
+}
+.comp-graph canvas { width: 100%; height: 100%; }
+
+/* Attention heatmap */
+.attn-demo { display: flex; flex-direction: column; gap: 16px; }
+.attn-grid {
+  display: grid; gap: 2px; width: fit-content; margin: 0 auto;
+}
+.attn-cell {
+  width: 36px; height: 36px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; color: var(--text);
+  transition: all 0.3s;
+}
+.attn-labels {
+  display: flex; gap: 2px; justify-content: center;
+}
+.attn-label {
+  width: 36px; text-align: center; font-family: var(--mono);
+  font-size: 10px; color: var(--text-dim);
+}
+.attn-controls {
+  display: flex; gap: 8px; align-items: center; justify-content: center;
+  font-size: 0.8em;
+}
+.attn-controls button {
+  background: var(--bg-interactive); border: 1px solid var(--border);
+  color: var(--text-secondary); padding: 6px 16px; border-radius: 8px;
+  font-size: 12px; cursor: pointer; font-family: var(--font);
+  transition: all 0.2s;
+}
+.attn-controls button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Token probability demo */
+.token-probs {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.token-prob-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.token-prob-char {
+  font-family: var(--mono); font-size: 1.1em; font-weight: 700;
+  width: 24px; text-align: center; color: var(--text);
+}
+.token-prob-bar-wrap {
+  flex: 1; height: 20px; background: var(--bg); border-radius: 4px;
+  overflow: hidden; position: relative;
+}
+.token-prob-bar {
+  height: 100%; border-radius: 4px; transition: width 0.5s ease;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.token-prob-val {
+  font-family: var(--mono); font-size: 0.75em; color: var(--text-dim);
+  width: 48px; text-align: right;
+}
+
+/* Temperature slider */
+.temp-control {
+  display: flex; align-items: center; gap: 12px; margin: 16px 0;
+  font-size: 0.85em;
+}
+.temp-control input[type="range"] {
+  flex: 1; accent-color: var(--accent);
+}
+.temp-control .val {
+  font-family: var(--mono); color: var(--accent);
+  min-width: 36px; text-align: right;
+}
+
+/* Training loss chart */
+.loss-chart {
+  width: 100%; height: 200px; position: relative;
+  background: var(--bg); border-radius: 12px; border: 1px solid var(--border);
+}
+.loss-chart canvas { width: 100%; height: 100%; }
+
+/* Embedding visualization */
+.embed-viz {
+  width: 100%; height: 260px; position: relative;
+  background: var(--bg); border-radius: 12px; border: 1px solid var(--border);
+}
+.embed-viz canvas { width: 100%; height: 100%; }
+
+/* ============ PIPELINE ============ */
+.pipeline {
+  display: flex; gap: 0; align-items: stretch; margin: 24px 0;
+  overflow-x: auto; padding-bottom: 8px;
+}
+.pipeline::-webkit-scrollbar { height: 4px; }
+.pipeline::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.pipe-stage {
+  flex: 1; min-width: 120px; background: var(--bg-surface);
+  border: 1px solid var(--border); padding: 16px;
+  position: relative; text-align: center;
+}
+.pipe-stage:first-child { border-radius: 12px 0 0 12px; }
+.pipe-stage:last-child { border-radius: 0 12px 12px 0; }
+.pipe-stage::after {
+  content: ''; position: absolute; right: -8px; top: 50%;
+  transform: translateY(-50%); width: 0; height: 0;
+  border: 6px solid transparent; border-left-color: var(--accent);
+  z-index: 2;
+}
+.pipe-stage:last-child::after { display: none; }
+.pipe-stage .pipe-icon { font-size: 1.4em; margin-bottom: 6px; }
+.pipe-stage .pipe-label {
+  font-size: 0.7em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--accent); margin-bottom: 4px;
+}
+.pipe-stage .pipe-desc {
+  font-size: 0.72em; color: var(--text-dim); line-height: 1.5;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  padding: 48px 24px; text-align: center;
+  color: var(--text-dim); font-size: 0.75em;
+}
+.footer a { color: var(--text-secondary); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+/* ============ REVEAL ANIMATION ============ */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="hero-bg"></div>
+<div class="hero-grid"></div>
+
+<nav class="nav-dots" id="navDots">
+  <button class="nav-dot active" data-label="Top" onclick="scrollToChapter(0)"></button>
+  <button class="nav-dot" data-label="The Idea" onclick="scrollToChapter(1)"></button>
+  <button class="nav-dot" data-label="Tokenizer" onclick="scrollToChapter(2)"></button>
+  <button class="nav-dot" data-label="Autograd" onclick="scrollToChapter(3)"></button>
+  <button class="nav-dot" data-label="Architecture" onclick="scrollToChapter(4)"></button>
+  <button class="nav-dot" data-label="Training" onclick="scrollToChapter(5)"></button>
+  <button class="nav-dot" data-label="Inference" onclick="scrollToChapter(6)"></button>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="chapter" id="ch0" style="border-bottom: none; min-height: 100vh;">
+  <div class="hero">
+    <div class="hero-badge reveal">
+      <span class="hero-badge-dot"></span>
+      Andrej Karpathy's microGPT &middot; Explainer
+    </div>
+    <h1 class="reveal delay-1">A complete GPT<br>in <span class="highlight">pure Python.</span></h1>
+    <p class="hero-sub reveal delay-2">
+      No PyTorch. No NumPy. No dependencies. Just the raw algorithm that powers every large language model, laid bare in ~100 lines of code.
+    </p>
+    <div class="hero-stats reveal delay-3">
+      <div class="hero-stat">
+        <div class="hero-stat-val">~4K</div>
+        <div class="hero-stat-label">Parameters</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">0</div>
+        <div class="hero-stat-label">Dependencies</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">~100</div>
+        <div class="hero-stat-label">Lines</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">1</div>
+        <div class="hero-stat-label">File</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH1: THE IDEA ===================== -->
+<section class="chapter" id="ch1">
+  <div class="col-wide">
+    <div class="chapter-label reveal">01 &mdash; The Idea</div>
+    <h2 class="reveal delay-1">Everything else<br>is just <span class="highlight">efficiency</span></h2>
+    <p class="lead reveal delay-2">
+      GPT-4, Claude, Gemini. Billions of parameters trained on the entire internet. But the core algorithm? It fits on a single page. Karpathy's microGPT strips away every optimization, every library, every abstraction, and shows you the beating heart of modern AI.
+    </p>
+
+    <div class="compare-row reveal delay-3">
+      <div class="compare-card bad">
+        <span class="badge">GPT-4 Scale</span>
+        <h3>Trillions of ops</h3>
+        <p>Thousands of GPUs, months of training, terabytes of data, millions of lines of infrastructure code. CUDA kernels, distributed training, mixed precision, flash attention.</p>
+      </div>
+      <div class="compare-card good">
+        <span class="badge">microGPT</span>
+        <h3>Same algorithm</h3>
+        <p>One Python file. Trains on a list of names. Generates new ones. The exact same math: embeddings, attention, backprop, Adam. Just without the scale.</p>
+      </div>
+    </div>
+
+    <div class="pipeline reveal delay-4">
+      <div class="pipe-stage">
+        <div class="pipe-label">Tokenize</div>
+        <div class="pipe-desc">Characters become numbers</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Embed</div>
+        <div class="pipe-desc">Numbers become vectors</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Attend</div>
+        <div class="pipe-desc">Tokens talk to each other</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Transform</div>
+        <div class="pipe-desc">MLP processes the result</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Predict</div>
+        <div class="pipe-desc">Probabilities over next token</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="pipe-label">Learn</div>
+        <div class="pipe-desc">Backprop + Adam update</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH2: TOKENIZER ===================== -->
+<section class="chapter" id="ch2">
+  <div class="col-wide">
+    <div class="chapter-label reveal">02 &mdash; The Tokenizer</div>
+    <h2 class="reveal delay-1">Letters in,<br><span class="highlight">numbers</span> out</h2>
+    <p class="lead reveal delay-2">
+      Neural networks don't understand text. They understand numbers. The tokenizer maps each unique character to an integer ID. The special BOS (Beginning of Sequence) token marks where names start and end.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="tokenizerDemo">
+      <h4>Interactive Tokenizer</h4>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="font-size:0.8em;color:var(--text-dim);">Type a name:</span>
+        <input id="tokInput" type="text" value="hardy" maxlength="8" spellcheck="false"
+          style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 14px;
+          border-radius:8px;font-family:var(--mono);font-size:1em;width:140px;outline:none;"
+        >
+      </div>
+      <div id="tokOutput" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <div id="tokSequence" style="font-family:var(--mono);font-size:0.8em;color:var(--text-dim);"></div>
+    </div>
+
+    <div class="callout reveal delay-4">
+      <strong>Why character-level?</strong> Production LLMs use subword tokenizers (BPE) that merge frequent character pairs into larger tokens. microGPT keeps it simple: one character = one token. The vocabulary is just the 26 lowercase letters plus a few extras from the names dataset, plus the BOS marker. About 28 tokens total.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH3: AUTOGRAD ===================== -->
+<section class="chapter" id="ch3">
+  <div class="col-wide">
+    <div class="chapter-label reveal">03 &mdash; The Autograd</div>
+    <h2 class="reveal delay-1">Teaching the network<br>to <span class="highlight">learn</span></h2>
+    <p class="lead reveal delay-2">
+      This is the secret sauce. The <code>Value</code> class wraps every number in the network and tracks how it was computed. When you call <code>.backward()</code>, it walks the computation graph in reverse, applying the chain rule to calculate gradients. Every addition, multiplication, and exponent knows its own derivative.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="autogradDemo">
+      <h4>Computation Graph</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Watch values flow forward (blue) and gradients flow backward (pink). Click "Backward" to see the chain rule in action.
+      </p>
+      <div class="comp-graph" id="compGraph">
+        <canvas id="compCanvas"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
+        <button onclick="runAutograd('forward')" style="background:var(--bg-interactive);border:1px solid var(--border);color:var(--accent);padding:6px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:12px;">Forward</button>
+        <button onclick="runAutograd('backward')" style="background:var(--bg-interactive);border:1px solid var(--border);color:var(--accent2);padding:6px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:12px;">Backward</button>
+        <button onclick="runAutograd('reset')" style="background:var(--bg-interactive);border:1px solid var(--border);color:var(--text-dim);padding:6px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:12px;">Reset</button>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent2);">
+      <strong>This replaces PyTorch.</strong> In a real framework, <code>torch.Tensor</code> does exactly this but on GPU arrays with thousands of values at once. microGPT does it one scalar at a time, making every operation visible. Slow? Yes. Educational? Absolutely.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH4: ARCHITECTURE ===================== -->
+<section class="chapter" id="ch4">
+  <div class="col-wide">
+    <div class="chapter-label reveal">04 &mdash; The Architecture</div>
+    <h2 class="reveal delay-1">Attention is<br><span class="highlight">all you need</span></h2>
+    <p class="lead reveal delay-2">
+      The GPT architecture: token embeddings + position embeddings go through multi-head attention (4 heads), then an MLP. That's it. One layer. The attention mechanism lets each token look at all previous tokens and decide which ones matter for predicting the next one.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="attnDemo">
+      <h4>Attention Heatmap</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Each cell shows how much token (row) attends to token (column). Brighter = stronger attention. Click "Randomize" to see different patterns.
+      </p>
+      <div class="attn-demo">
+        <div id="attnLabelsTop" class="attn-labels"></div>
+        <div style="display:flex;gap:2px;">
+          <div id="attnLabelsLeft" style="display:flex;flex-direction:column;gap:2px;justify-content:center;"></div>
+          <div id="attnGrid" class="attn-grid"></div>
+        </div>
+        <div class="attn-controls">
+          <span style="color:var(--text-dim);font-size:0.85em;">Head:</span>
+          <button onclick="setAttnHead(0)" class="attn-head-btn" data-h="0">1</button>
+          <button onclick="setAttnHead(1)" class="attn-head-btn" data-h="1">2</button>
+          <button onclick="setAttnHead(2)" class="attn-head-btn" data-h="2">3</button>
+          <button onclick="setAttnHead(3)" class="attn-head-btn" data-h="3">4</button>
+          <button onclick="randomizeAttn()" style="margin-left:8px;">Randomize</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent3);">
+      <strong>RMSNorm, not LayerNorm.</strong> microGPT diverges slightly from GPT-2: it uses RMSNorm (simpler, no mean subtraction), ReLU-squared instead of GeLU, and no biases anywhere. These are common simplifications in modern LLMs (LLaMA uses the same choices).
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH5: TRAINING ===================== -->
+<section class="chapter" id="ch5">
+  <div class="col-wide">
+    <div class="chapter-label reveal">05 &mdash; The Training Loop</div>
+    <h2 class="reveal delay-1">500 steps to<br><span class="highlight">learn names</span></h2>
+    <p class="lead reveal delay-2">
+      For each training step: take one name, tokenize it, run it through the model, compute the loss (how wrong the predictions were), backpropagate the gradients, and nudge every parameter slightly in the right direction with Adam. Repeat 500 times.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="trainDemo">
+      <h4>Training Simulation</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+        Watch the loss decrease as the model learns. Lower loss = better predictions.
+      </p>
+      <div class="loss-chart" id="lossChart">
+        <canvas id="lossCanvas"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;align-items:center;">
+        <button id="trainBtn" onclick="startTraining()" style="background:var(--bg-interactive);border:1px solid var(--border);color:var(--accent3);padding:6px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:12px;">Train</button>
+        <span id="trainStatus" style="font-family:var(--mono);font-size:0.8em;color:var(--text-dim);">Ready</span>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent4);">
+      <strong>Adam optimizer.</strong> Gradient descent is the simple version: just subtract the gradient scaled by a learning rate. Adam is smarter: it tracks a running average of gradients (momentum) and their squared magnitudes (adaptive learning rate), plus bias correction. The "blessed optimizer" as Karpathy calls it. Cosine learning rate decay starts high and gently slows down, like easing off the gas as you approach the destination.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CH6: INFERENCE ===================== -->
+<section class="chapter" id="ch6">
+  <div class="col-wide">
+    <div class="chapter-label reveal">06 &mdash; Inference</div>
+    <h2 class="reveal delay-1">The model<br><span class="highlight">speaks</span></h2>
+    <p class="lead reveal delay-2">
+      After training, the model can generate new names it has never seen. Start with a BOS token, run the model to get probabilities over the next character, sample one, feed it back in, repeat until it emits another BOS (end of name). Temperature controls creativity: low = conservative, high = wild.
+    </p>
+
+    <div class="demo-box reveal delay-3" id="inferDemo">
+      <h4>Token Probability</h4>
+      <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:8px;">
+        Given the sequence so far, the model outputs a probability for every possible next character. Adjust temperature to see how it changes the distribution.
+      </p>
+      <div class="temp-control">
+        <span>Temperature:</span>
+        <input type="range" id="tempSlider" min="0.1" max="2.0" step="0.1" value="0.5">
+        <span class="val" id="tempVal">0.5</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:0.85em;color:var(--text-dim);margin-bottom:12px;">
+        Context: <span id="inferContext" style="color:var(--accent);">BOS → j → o → h</span>
+      </div>
+      <div class="token-probs" id="tokenProbs"></div>
+      <div style="margin-top:12px;text-align:center;">
+        <button onclick="randomizeInference()" style="background:var(--bg-interactive);border:1px solid var(--border);color:var(--accent);padding:6px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:12px;">New context</button>
+      </div>
+    </div>
+
+    <div class="callout reveal delay-4" style="border-left-color: var(--accent);">
+      <strong>This is exactly how ChatGPT works.</strong> Same loop: predict next token, sample, feed back. The only differences are scale (billions vs thousands of parameters), vocabulary (50,000+ subword tokens vs 28 characters), and context length (128K+ vs 8 tokens). The core sampling algorithm is identical.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<div class="footer">
+  <p>Original code by <a href="https://karpathy.ai" target="_blank">Andrej Karpathy</a> &middot; Explainer by Hardy Thomas &middot; Built with Claude</p>
+</div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+// ============ SCROLL & REVEAL ============
+const chapters = document.querySelectorAll('.chapter');
+const dots = document.querySelectorAll('.nav-dot');
+const progressBar = document.getElementById('progressBar');
+
+function scrollToChapter(i) {
+  chapters[i].scrollIntoView({ behavior: 'smooth' });
+}
+
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (scrollY / docH * 100) + '%';
+
+  let active = 0;
+  chapters.forEach((ch, i) => {
+    const rect = ch.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.5) active = i;
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === active));
+});
+
+// ============ TOKENIZER DEMO ============
+const CHARS = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const BOS_ID = CHARS.length;
+const COLORS_TOK = [
+  '#6c8aff','#ff6ac1','#69ff94','#ffd866','#ffa657','#00e5ff',
+  '#ff4444','#b08fd8','#44cc88','#ffaa44','#79c0ff','#7ee787',
+];
+
+function updateTokenizer() {
+  const input = document.getElementById('tokInput').value.toLowerCase().replace(/[^a-z]/g, '');
+  const output = document.getElementById('tokOutput');
+  const seq = document.getElementById('tokSequence');
+
+  let html = '<div style="display:flex;align-items:center;gap:4px;"><span style="background:var(--bg-interactive);border:1px solid var(--border);padding:6px 10px;border-radius:8px;font-family:var(--mono);font-size:0.9em;color:var(--accent3);">BOS</span>';
+  const ids = [BOS_ID];
+
+  for (const ch of input) {
+    const idx = CHARS.indexOf(ch);
+    if (idx >= 0) {
+      const color = COLORS_TOK[idx % COLORS_TOK.length];
+      html += `<span style="font-size:1.2em;color:var(--text-dim);">&rarr;</span>`;
+      html += `<span style="background:${color}22;border:1px solid ${color}44;padding:6px 10px;border-radius:8px;font-family:var(--mono);font-size:0.9em;color:${color};">${ch}<span style="font-size:0.6em;opacity:0.6;margin-left:4px;">${idx}</span></span>`;
+      ids.push(idx);
+    }
+  }
+  html += `<span style="font-size:1.2em;color:var(--text-dim);">&rarr;</span>`;
+  html += `<span style="background:var(--bg-interactive);border:1px solid var(--border);padding:6px 10px;border-radius:8px;font-family:var(--mono);font-size:0.9em;color:var(--accent3);">BOS</span>`;
+  ids.push(BOS_ID);
+  html += '</div>';
+
+  output.innerHTML = html;
+  seq.textContent = `Token IDs: [${ids.join(', ')}]`;
+}
+
+document.getElementById('tokInput').addEventListener('input', updateTokenizer);
+updateTokenizer();
+
+// ============ AUTOGRAD DEMO ============
+function runAutograd(mode) {
+  const canvas = document.getElementById('compCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W; canvas.height = H;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Simple computation: loss = -(x * w + b).log()
+  const nodes = [
+    { label: 'x=2.0', x: 60, y: 60, val: 2.0, grad: null },
+    { label: 'w=0.5', x: 60, y: 180, val: 0.5, grad: null },
+    { label: 'b=0.1', x: 60, y: H - 60, val: 0.1, grad: null },
+    { label: 'x*w', x: W*0.3, y: 120, val: 1.0, grad: null },
+    { label: '+b', x: W*0.5, y: 150, val: 1.1, grad: null },
+    { label: 'log', x: W*0.7, y: 150, val: 0.0953, grad: null },
+    { label: '-loss', x: W-60, y: 150, val: -0.0953, grad: null },
+  ];
+  const edges = [
+    [0, 3], [1, 3], [3, 4], [2, 4], [4, 5], [5, 6]
+  ];
+
+  if (mode === 'backward') {
+    nodes[6].grad = 1.0;
+    nodes[5].grad = -1.0;
+    nodes[4].grad = -1.0 / 1.1;
+    nodes[3].grad = nodes[4].grad;
+    nodes[2].grad = nodes[4].grad;
+    nodes[0].grad = nodes[3].grad * 0.5;
+    nodes[1].grad = nodes[3].grad * 2.0;
+  }
+
+  // Draw edges
+  for (const [a, b] of edges) {
+    ctx.beginPath();
+    ctx.moveTo(nodes[a].x, nodes[a].y);
+    ctx.lineTo(nodes[b].x, nodes[b].y);
+    if (mode === 'backward') {
+      ctx.strokeStyle = '#ff6ac155';
+      ctx.lineWidth = 2;
+    } else if (mode === 'forward') {
+      ctx.strokeStyle = '#6c8aff55';
+      ctx.lineWidth = 2;
+    } else {
+      ctx.strokeStyle = '#1e213366';
+      ctx.lineWidth = 1;
+    }
+    ctx.stroke();
+
+    // Arrow
+    const dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+    const len = Math.hypot(dx, dy);
+    const mx = (nodes[a].x + nodes[b].x) / 2, my = (nodes[a].y + nodes[b].y) / 2;
+    const angle = Math.atan2(dy, dx);
+    if (mode === 'backward') {
+      // Backward arrow (reversed)
+      ctx.fillStyle = '#ff6ac1';
+      ctx.save(); ctx.translate(mx, my); ctx.rotate(angle + Math.PI);
+      ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-3, -4); ctx.lineTo(-3, 4); ctx.fill();
+      ctx.restore();
+    } else if (mode === 'forward') {
+      ctx.fillStyle = '#6c8aff';
+      ctx.save(); ctx.translate(mx, my); ctx.rotate(angle);
+      ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-3, -4); ctx.lineTo(-3, 4); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // Draw nodes
+  for (const n of nodes) {
+    const r = 28;
+    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#13151e';
+    ctx.strokeStyle = mode === 'backward' && n.grad !== null ? '#ff6ac1' :
+                     mode === 'forward' ? '#6c8aff' : '#1e2133';
+    ctx.lineWidth = 2;
+    ctx.fill(); ctx.stroke();
+
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#e8eaf0';
+    ctx.fillText(n.label, n.x, n.y + 3);
+
+    if (mode === 'forward') {
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#6c8aff';
+      ctx.fillText(n.val.toFixed(3), n.x, n.y + 16);
+    }
+    if (mode === 'backward' && n.grad !== null) {
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#ff6ac1';
+      ctx.fillText('∇' + n.grad.toFixed(3), n.x, n.y - 34);
+    }
+  }
+}
+// Init
+setTimeout(() => runAutograd('reset'), 100);
+
+// ============ ATTENTION DEMO ============
+const ATTN_WORD = 'john';
+let attnHead = 0;
+let attnWeights = [];
+
+function generateAttnWeights() {
+  attnWeights = [];
+  for (let h = 0; h < 4; h++) {
+    const hw = [];
+    for (let i = 0; i < ATTN_WORD.length; i++) {
+      const row = [];
+      let sum = 0;
+      for (let j = 0; j <= i; j++) {
+        const v = Math.random() * 2 + (j === i ? 1 : 0) + (j === 0 ? 0.5 : 0);
+        row.push(v);
+        sum += v;
+      }
+      // Softmax
+      const exps = row.map(v => Math.exp(v));
+      const total = exps.reduce((a, b) => a + b, 0);
+      hw.push(exps.map(v => v / total));
+    }
+    attnWeights.push(hw);
+  }
+}
+generateAttnWeights();
+
+function renderAttn() {
+  const grid = document.getElementById('attnGrid');
+  const labelsTop = document.getElementById('attnLabelsTop');
+  const labelsLeft = document.getElementById('attnLabelsLeft');
+  const n = ATTN_WORD.length;
+
+  grid.style.gridTemplateColumns = `repeat(${n}, 36px)`;
+  grid.innerHTML = '';
+  labelsTop.innerHTML = '';
+  labelsLeft.innerHTML = '';
+
+  // Offset for left labels
+  labelsTop.style.paddingLeft = '38px';
+
+  for (let j = 0; j < n; j++) {
+    labelsTop.innerHTML += `<span class="attn-label">${ATTN_WORD[j]}</span>`;
+  }
+  for (let i = 0; i < n; i++) {
+    labelsLeft.innerHTML += `<div style="height:36px;display:flex;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text-dim);width:36px;justify-content:center;">${ATTN_WORD[i]}</div>`;
+  }
+
+  const hw = attnWeights[attnHead];
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const cell = document.createElement('div');
+      cell.className = 'attn-cell';
+      if (j <= i) {
+        const w = hw[i][j];
+        const intensity = Math.floor(w * 255);
+        cell.style.background = `rgba(108, 138, 255, ${w * 0.9 + 0.1})`;
+        cell.textContent = (w * 100).toFixed(0);
+        cell.style.color = w > 0.4 ? '#0a0e17' : '#e8eaf0';
+      } else {
+        cell.style.background = '#0a0e1780';
+        cell.textContent = '';
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  // Highlight active head button
+  document.querySelectorAll('.attn-head-btn').forEach(b => {
+    b.style.borderColor = parseInt(b.dataset.h) === attnHead ? 'var(--accent)' : 'var(--border)';
+    b.style.color = parseInt(b.dataset.h) === attnHead ? 'var(--accent)' : 'var(--text-secondary)';
+  });
+}
+
+function setAttnHead(h) { attnHead = h; renderAttn(); }
+function randomizeAttn() { generateAttnWeights(); renderAttn(); }
+renderAttn();
+
+// ============ TRAINING LOSS DEMO ============
+let trainAnimId = null;
+let trainStep = 0;
+let lossHistory = [];
+
+function drawLoss() {
+  const canvas = document.getElementById('lossCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W; canvas.height = H;
+
+  ctx.clearRect(0, 0, W, H);
+
+  if (lossHistory.length < 2) return;
+
+  // Grid
+  ctx.strokeStyle = '#1e213333';
+  ctx.lineWidth = 0.5;
+  for (let y = 0; y < H; y += H/5) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Loss curve
+  const maxLoss = 4.0;
+  const minLoss = 0;
+  ctx.beginPath();
+  for (let i = 0; i < lossHistory.length; i++) {
+    const x = (i / 500) * W;
+    const y = H - ((lossHistory[i] - minLoss) / (maxLoss - minLoss)) * H;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#6c8aff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Glow
+  ctx.lineTo((lossHistory.length - 1) / 500 * W, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(108,138,255,0.15)');
+  grad.addColorStop(1, 'rgba(108,138,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Labels
+  ctx.font = '10px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#4a4e5e';
+  ctx.fillText(`Step ${trainStep}/500`, 10, 16);
+  if (lossHistory.length > 0) {
+    ctx.fillText(`Loss: ${lossHistory[lossHistory.length - 1].toFixed(3)}`, 10, 30);
+  }
+}
+
+function startTraining() {
+  if (trainAnimId) { cancelAnimationFrame(trainAnimId); trainAnimId = null; }
+  trainStep = 0;
+  lossHistory = [];
+
+  // Simulate a realistic loss curve
+  function step() {
+    if (trainStep >= 500) {
+      document.getElementById('trainStatus').textContent = 'Done!';
+      document.getElementById('trainStatus').style.color = 'var(--accent3)';
+      trainAnimId = null;
+      return;
+    }
+
+    // Simulated loss: starts ~3.3, decays to ~2.0 with noise
+    const t = trainStep / 500;
+    const baseLoss = 3.3 * Math.exp(-3 * t) + 2.0 + 0.3 * Math.exp(-8 * t);
+    const noise = (Math.random() - 0.5) * 0.4 * Math.exp(-2 * t);
+    const lr_cos = 0.5 * (1 + Math.cos(Math.PI * t));
+    lossHistory.push(Math.max(1.5, baseLoss + noise));
+
+    trainStep++;
+    document.getElementById('trainStatus').textContent = `Step ${trainStep}/500  Loss: ${lossHistory[lossHistory.length-1].toFixed(3)}  LR: ${(0.01 * lr_cos).toFixed(4)}`;
+    document.getElementById('trainStatus').style.color = 'var(--accent4)';
+    drawLoss();
+
+    trainAnimId = requestAnimationFrame(step);
+  }
+  step();
+}
+
+drawLoss();
+
+// ============ INFERENCE / TOKEN PROB DEMO ============
+const SAMPLE_CONTEXTS = [
+  { chars: ['j','o','h'], next: [{c:'n',p:0.42},{c:'a',p:0.18},{c:'e',p:0.12},{c:'s',p:0.08},{c:'i',p:0.06},{c:'BOS',p:0.04}] },
+  { chars: ['m','a','r'], next: [{c:'y',p:0.35},{c:'i',p:0.22},{c:'k',p:0.15},{c:'t',p:0.08},{c:'a',p:0.06},{c:'BOS',p:0.03}] },
+  { chars: ['s','a'], next: [{c:'m',p:0.28},{c:'r',p:0.22},{c:'n',p:0.16},{c:'l',p:0.11},{c:'d',p:0.07},{c:'BOS',p:0.03}] },
+  { chars: ['a','l','i'], next: [{c:'c',p:0.32},{c:'s',p:0.18},{c:'n',p:0.14},{c:'a',p:0.12},{c:'BOS',p:0.08},{c:'x',p:0.04}] },
+  { chars: ['h','a','r','d'], next: [{c:'y',p:0.38},{c:'i',p:0.20},{c:'e',p:0.14},{c:'BOS',p:0.10},{c:'o',p:0.06},{c:'a',p:0.04}] },
+];
+let currentContext = 0;
+
+function renderInference() {
+  const ctx = SAMPLE_CONTEXTS[currentContext];
+  const temp = parseFloat(document.getElementById('tempSlider').value);
+  document.getElementById('tempVal').textContent = temp.toFixed(1);
+
+  const contextStr = 'BOS → ' + ctx.chars.join(' → ');
+  document.getElementById('inferContext').textContent = contextStr;
+
+  // Apply temperature to probabilities
+  const logits = ctx.next.map(n => Math.log(n.p + 0.001));
+  const scaled = logits.map(l => l / temp);
+  const maxL = Math.max(...scaled);
+  const exps = scaled.map(l => Math.exp(l - maxL));
+  const sum = exps.reduce((a, b) => a + b, 0);
+  const probs = exps.map(e => e / sum);
+
+  const container = document.getElementById('tokenProbs');
+  let html = '';
+  const maxP = Math.max(...probs);
+  for (let i = 0; i < ctx.next.length; i++) {
+    const p = probs[i];
+    const pct = (p / maxP * 100).toFixed(0);
+    const label = ctx.next[i].c === 'BOS' ? '<span style="color:var(--accent3)">END</span>' : ctx.next[i].c;
+    html += `<div class="token-prob-row">
+      <div class="token-prob-char">${label}</div>
+      <div class="token-prob-bar-wrap"><div class="token-prob-bar" style="width:${pct}%"></div></div>
+      <div class="token-prob-val">${(p*100).toFixed(1)}%</div>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function randomizeInference() {
+  currentContext = (currentContext + 1) % SAMPLE_CONTEXTS.length;
+  renderInference();
+}
+
+document.getElementById('tempSlider').addEventListener('input', renderInference);
+renderInference();
+
+// ============ RESIZE HANDLERS ============
+window.addEventListener('resize', () => {
+  if (document.getElementById('compCanvas').parentElement.clientWidth > 0) {
+    // Re-render autograd if visible
+  }
+  if (lossHistory.length > 0) drawLoss();
+});
+</script>
+
+</body>
+</html>
