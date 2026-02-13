@@ -792,10 +792,18 @@ function drawRateChart() {
   ctx.scale(2, 2);
   ctx.clearRect(0, 0, W, H);
 
-  const pad = { top: 16, right: 16, bottom: 28, left: 40 };
+  const pad = { top: 16, right: 16, bottom: 40, left: 40 };
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
   const maxRate = 8;
+
+  // X axis line
+  ctx.strokeStyle = '#253352';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + cH);
+  ctx.lineTo(pad.left + cW, pad.top + cH);
+  ctx.stroke();
 
   // Grid
   ctx.strokeStyle = '#25335233';
@@ -809,12 +817,21 @@ function drawRateChart() {
     ctx.fillText(r + '%', pad.left - 6, y + 3);
   }
 
-  // Year labels
+  // Year labels + tick marks
   ctx.textAlign = 'center';
+  ctx.font = '9px "JetBrains Mono", monospace';
   for (let i = 0; i < rateData.length; i += 5) {
     const x = pad.left + (i / (rateData.length - 1)) * cW;
-    ctx.fillStyle = '#5c5648';
-    ctx.fillText(rateData[i][0], x, H - 6);
+    // Tick mark
+    ctx.strokeStyle = '#253352';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, pad.top + cH);
+    ctx.lineTo(x, pad.top + cH + 6);
+    ctx.stroke();
+    // Label
+    ctx.fillStyle = '#9a9484';
+    ctx.fillText(rateData[i][0], x, pad.top + cH + 20);
   }
 
   // Line
@@ -976,10 +993,18 @@ function drawInflationChart() {
   ctx.scale(2, 2);
   ctx.clearRect(0, 0, W, H);
 
-  const pad = { top: 16, right: 16, bottom: 28, left: 40 };
+  const pad = { top: 16, right: 16, bottom: 40, left: 40 };
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
   const maxCPI = 9;
+
+  // X axis line
+  ctx.strokeStyle = '#253352';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + cH);
+  ctx.lineTo(pad.left + cW, pad.top + cH);
+  ctx.stroke();
 
   // Target band (2-3%)
   const bandTop = pad.top + (1 - 3 / maxCPI) * cH;
@@ -1012,12 +1037,21 @@ function drawInflationChart() {
     ctx.fillText(r + '%', pad.left - 6, y + 3);
   }
 
-  // Year labels
+  // Year labels + tick marks
   ctx.textAlign = 'center';
+  ctx.font = '9px "JetBrains Mono", monospace';
   for (let i = 0; i < inflationData.length; i += 5) {
     const x = pad.left + (i / (inflationData.length - 1)) * cW;
-    ctx.fillStyle = '#5c5648';
-    ctx.fillText(inflationData[i][0], x, H - 6);
+    // Tick mark
+    ctx.strokeStyle = '#253352';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, pad.top + cH);
+    ctx.lineTo(x, pad.top + cH + 6);
+    ctx.stroke();
+    // Label
+    ctx.fillStyle = '#9a9484';
+    ctx.fillText(inflationData[i][0], x, pad.top + cH + 20);
   }
 
   // Line
