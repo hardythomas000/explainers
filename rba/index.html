@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The RBA — How Australia's Central Bank Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b1120;
+  --bg-panel: #111b2e;
+  --bg-card: #162038;
+  --bg-hover: #1c2a48;
+  --text: #e8e4dc;
+  --text-secondary: #9a9484;
+  --text-dim: #5c5648;
+  --border: #253352;
+  --gold: #d4a853;
+  --gold-light: #e8c87a;
+  --gold-dim: rgba(212, 168, 83, 0.15);
+  --red: #e05555;
+  --green: #4aba8a;
+  --blue: #5b8fd4;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Source Sans 3', 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ============ TOP BAR ============ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(11, 17, 32, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+}
+.topbar-brand {
+  font-family: var(--serif); font-weight: 700; font-size: 1em;
+  color: var(--gold);
+  display: flex; align-items: center; gap: 10px;
+}
+.topbar-brand .shield {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--gold), #b8922f);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7em; color: var(--bg); font-weight: 900;
+}
+.topbar-nav {
+  display: flex; gap: 4px;
+}
+.topbar-nav a {
+  color: var(--text-dim); text-decoration: none;
+  font-size: 0.72em; font-weight: 600; letter-spacing: 0.5px;
+  padding: 6px 12px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.topbar-nav a:hover, .topbar-nav a.active {
+  color: var(--gold); background: var(--gold-dim);
+}
+@media (max-width: 700px) {
+  .topbar-nav a { font-size: 0.65em; padding: 4px 8px; }
+}
+
+/* ============ HERO ============ */
+.hero {
+  padding: 100px 24px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 40%, rgba(212,168,83,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 30% at 30% 80%, rgba(91,143,212,0.04) 0%, transparent 60%);
+}
+.hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
+.hero-overline {
+  font-size: 0.7em; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.4em, 6vw, 3.8em);
+  font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.02em; margin-bottom: 20px;
+}
+.hero h1 .gold {
+  color: var(--gold);
+}
+.hero-sub {
+  font-size: 1.1em; color: var(--text-secondary);
+  line-height: 1.7; max-width: 540px; margin: 0 auto 40px;
+  font-weight: 300;
+}
+
+/* ============ TICKER BAR ============ */
+.ticker {
+  display: flex; gap: 0; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 40px;
+}
+.ticker-item {
+  padding: 16px 28px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.ticker-item:last-child { border-right: none; }
+.ticker-val {
+  font-family: var(--mono); font-size: 1.5em; font-weight: 700;
+  margin-bottom: 2px;
+}
+.ticker-label {
+  font-size: 0.65em; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+@media (max-width: 600px) {
+  .ticker-item { padding: 12px 16px; }
+  .ticker-val { font-size: 1.2em; }
+}
+
+/* ============ SECTIONS ============ */
+.section {
+  padding: 80px 24px;
+  border-top: 1px solid var(--border);
+}
+.section-inner {
+  max-width: 900px; margin: 0 auto;
+}
+.section-label {
+  font-size: 0.65em; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+}
+.section h2 {
+  font-family: var(--serif); font-size: clamp(1.6em, 3.5vw, 2.2em);
+  font-weight: 700; letter-spacing: -0.01em;
+  line-height: 1.15; margin-bottom: 16px;
+}
+.section-lead {
+  font-size: 1em; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 32px; max-width: 620px;
+  font-weight: 300;
+}
+
+/* ============ PANEL GRID ============ */
+.panel-grid {
+  display: grid; gap: 16px; margin: 24px 0;
+}
+.panel-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.panel-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 700px) {
+  .panel-grid.cols-2, .panel-grid.cols-3 { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px;
+  transition: border-color 0.3s;
+}
+.panel:hover { border-color: var(--gold); }
+.panel-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1em; margin-bottom: 14px;
+}
+.panel h3 {
+  font-family: var(--serif); font-size: 1.05em;
+  font-weight: 700; margin-bottom: 8px;
+}
+.panel p {
+  font-size: 0.85em; color: var(--text-secondary); line-height: 1.6;
+}
+
+/* ============ GAUGE ============ */
+.gauge-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 20px;
+}
+.gauge-svg { width: 240px; height: 140px; }
+.gauge-val {
+  font-family: var(--mono); font-size: 2.8em; font-weight: 700;
+  color: var(--gold); margin-top: -8px;
+}
+.gauge-unit {
+  font-size: 0.65em; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 2px; font-weight: 600;
+}
+.gauge-range {
+  display: flex; justify-content: space-between; width: 220px;
+  font-family: var(--mono); font-size: 0.7em; color: var(--text-dim);
+  margin-top: 8px;
+}
+
+/* ============ RATE SLIDER ============ */
+.rate-control {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; margin: 24px 0;
+}
+.rate-control h4 {
+  font-family: var(--serif); font-size: 1em; margin-bottom: 16px;
+}
+.rate-slider-row {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+.rate-slider-row input[type="range"] {
+  flex: 1; accent-color: var(--gold); height: 6px;
+}
+.rate-slider-row .rate-display {
+  font-family: var(--mono); font-size: 1.6em; font-weight: 700;
+  color: var(--gold); min-width: 80px; text-align: right;
+}
+
+.mortgage-results {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+}
+@media (max-width: 600px) {
+  .mortgage-results { grid-template-columns: 1fr; }
+}
+.mortgage-card {
+  background: var(--bg-card); border-radius: 10px; padding: 16px;
+  text-align: center;
+}
+.mortgage-card .label {
+  font-size: 0.65em; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 600; margin-bottom: 4px;
+}
+.mortgage-card .value {
+  font-family: var(--mono); font-size: 1.4em; font-weight: 700;
+}
+.mortgage-card .change {
+  font-family: var(--mono); font-size: 0.75em; margin-top: 4px;
+}
+
+/* ============ TIMELINE ============ */
+.timeline {
+  position: relative; padding-left: 32px; margin: 24px 0;
+}
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.tl-item {
+  position: relative; margin-bottom: 24px; padding-left: 16px;
+}
+.tl-item::before {
+  content: ''; position: absolute; left: -28px; top: 6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gold); border: 2px solid var(--bg);
+}
+.tl-item .tl-date {
+  font-family: var(--mono); font-size: 0.72em; color: var(--gold);
+  margin-bottom: 4px;
+}
+.tl-item h4 {
+  font-family: var(--serif); font-size: 0.95em; margin-bottom: 4px;
+}
+.tl-item p {
+  font-size: 0.82em; color: var(--text-secondary); line-height: 1.6;
+}
+
+/* ============ CHART ============ */
+.chart-box {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; margin: 24px 0;
+}
+.chart-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chart-title {
+  font-family: var(--serif); font-size: 0.9em; font-weight: 700;
+}
+.chart-legend {
+  display: flex; gap: 16px; font-size: 0.7em;
+}
+.chart-legend span {
+  display: flex; align-items: center; gap: 6px; color: var(--text-dim);
+}
+.chart-legend .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.chart-canvas-wrap {
+  padding: 16px; height: 260px; position: relative;
+}
+.chart-canvas-wrap canvas { width: 100%; height: 100%; }
+
+/* ============ STAT ROW ============ */
+.stat-row {
+  display: flex; gap: 0; flex-wrap: wrap; margin: 24px 0;
+  border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden;
+}
+.stat-cell {
+  flex: 1; min-width: 140px; padding: 20px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-cell .stat-num {
+  font-family: var(--mono); font-size: 1.6em; font-weight: 700;
+  margin-bottom: 4px;
+}
+.stat-cell .stat-label {
+  font-size: 0.65em; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+
+/* ============ QUOTE ============ */
+.quote-block {
+  border-left: 3px solid var(--gold);
+  padding: 20px 24px; margin: 24px 0;
+  background: var(--bg-panel); border-radius: 0 14px 14px 0;
+}
+.quote-block blockquote {
+  font-family: var(--serif); font-size: 1.05em;
+  font-style: italic; line-height: 1.6; color: var(--text);
+  margin-bottom: 8px;
+}
+.quote-block cite {
+  font-family: var(--sans); font-size: 0.75em;
+  color: var(--text-dim); font-style: normal;
+}
+
+/* ============ HOUSING VIZ ============ */
+.housing-bars {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 180px; padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin: 16px 0 8px;
+}
+.housing-bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  position: relative; transition: all 0.5s ease;
+  min-width: 0;
+  cursor: pointer;
+}
+.housing-bar:hover { opacity: 0.85; }
+.housing-bar .bar-label {
+  position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 0.55em; color: var(--text-dim);
+  white-space: nowrap;
+}
+.housing-bar .bar-val {
+  position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 0.6em; color: var(--text-secondary);
+  white-space: nowrap; opacity: 0; transition: opacity 0.2s;
+}
+.housing-bar:hover .bar-val { opacity: 1; }
+
+/* ============ FOOTER ============ */
+.footer {
+  padding: 48px 24px; text-align: center;
+  color: var(--text-dim); font-size: 0.72em;
+  border-top: 1px solid var(--border);
+}
+.footer a { color: var(--text-secondary); text-decoration: none; }
+.footer a:hover { color: var(--gold); }
+
+/* ============ REVEAL ============ */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.d1 { transition-delay: 0.1s; }
+.d2 { transition-delay: 0.2s; }
+.d3 { transition-delay: 0.3s; }
+.d4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="shield">RBA</div>
+    <span>Reserve Bank</span>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#what" class="active">What</a>
+    <a href="#rate">Rate</a>
+    <a href="#mortgage">Mortgage</a>
+    <a href="#housing">Housing</a>
+    <a href="#inflation">Inflation</a>
+    <a href="#bigpic">Big Picture</a>
+  </nav>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-overline reveal">Explainer</div>
+    <h1 class="reveal d1">Australia's <span class="gold">Central Bank</span></h1>
+    <p class="hero-sub reveal d2">
+      The Reserve Bank of Australia controls one number that ripples through the entire economy. Your mortgage, your savings, house prices, jobs, the value of the dollar. This is how it all connects.
+    </p>
+
+    <div class="ticker reveal d3">
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--gold)" id="heroRate">4.35%</div>
+        <div class="ticker-label">Cash Rate</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--green)">3.5%</div>
+        <div class="ticker-label">Inflation (CPI)</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--blue)">4.1%</div>
+        <div class="ticker-label">Unemployment</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--text)">$0.65</div>
+        <div class="ticker-label">AUD/USD</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT IS THE RBA ============ -->
+<section class="section" id="what">
+  <div class="section-inner">
+    <div class="section-label reveal">01 &mdash; What Is It</div>
+    <h2 class="reveal d1">The bank that banks use</h2>
+    <p class="section-lead reveal d2">
+      You keep your money in a bank. Your bank keeps its money at the RBA. The Reserve Bank of Australia sits at the top of the entire financial system. It prints the money, sets interest rates, and tries to keep the economy from overheating or stalling.
+    </p>
+
+    <div class="panel-grid cols-3 reveal d3">
+      <div class="panel">
+        <div class="panel-icon" style="background:var(--gold-dim);color:var(--gold);">$</div>
+        <h3>Prints money</h3>
+        <p>The RBA is the only institution that can create Australian dollars. Every banknote in your wallet was issued by the Reserve Bank.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-icon" style="background:rgba(91,143,212,0.15);color:var(--blue);">⇅</div>
+        <h3>Sets interest rates</h3>
+        <p>The board meets 8 times a year to decide the "cash rate," which flows through to every loan and savings account in the country.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-icon" style="background:rgba(74,186,138,0.15);color:var(--green);">◎</div>
+        <h3>Targets inflation</h3>
+        <p>Their main job: keep inflation between 2% and 3%. Not too hot (prices rising too fast), not too cold (economy stalling).</p>
+      </div>
+    </div>
+
+    <div class="quote-block reveal d4">
+      <blockquote>"The Reserve Bank's duty is to contribute to the stability of the currency, full employment, and the economic prosperity and welfare of the people of Australia."</blockquote>
+      <cite>Reserve Bank Act 1959</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE CASH RATE ============ -->
+<section class="section" id="rate">
+  <div class="section-inner">
+    <div class="section-label reveal">02 &mdash; The Cash Rate</div>
+    <h2 class="reveal d1">One number that controls everything</h2>
+    <p class="section-lead reveal d2">
+      The cash rate is what banks charge each other for overnight loans. When the RBA raises it, borrowing gets more expensive across the whole economy. When they cut it, money becomes cheaper. Every mortgage, business loan, car loan, and savings account is downstream of this one number.
+    </p>
+
+    <div class="panel-grid cols-2 reveal d3">
+      <div class="panel" style="text-align:center;">
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 240 140" id="gaugeSvg">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4aba8a"/>
+                <stop offset="50%" stop-color="#d4a853"/>
+                <stop offset="100%" stop-color="#e05555"/>
+              </linearGradient>
+            </defs>
+            <!-- Background arc -->
+            <path d="M 30 130 A 90 90 0 0 1 210 130" fill="none" stroke="#253352" stroke-width="14" stroke-linecap="round"/>
+            <!-- Value arc -->
+            <path d="M 30 130 A 90 90 0 0 1 210 130" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round"
+              id="gaugeArc" stroke-dasharray="283" stroke-dashoffset="120"/>
+            <!-- Needle -->
+            <line id="gaugeNeedle" x1="120" y1="130" x2="120" y2="50" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"
+              transform="rotate(-30, 120, 130)"/>
+            <circle cx="120" cy="130" r="6" fill="var(--gold)"/>
+          </svg>
+          <div class="gauge-val" id="gaugeVal">4.35%</div>
+          <div class="gauge-unit">Cash Rate Target</div>
+          <div class="gauge-range"><span>0%</span><span>8%</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>How it flows down</h3>
+        <p style="font-size:0.85em;color:var(--text-secondary);line-height:1.7;margin-bottom:12px;">
+          The RBA doesn't set your mortgage rate directly. But banks borrow from each other at the cash rate, so when it goes up, they pass the cost on to you.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:var(--mono);font-size:0.8em;color:var(--gold);min-width:60px;">4.35%</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="width:55%;height:100%;background:var(--gold);border-radius:3px;"></div>
+            </div>
+            <span style="font-size:0.72em;color:var(--text-dim);">Cash rate</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:var(--mono);font-size:0.8em;color:var(--blue);min-width:60px;">~6.2%</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="width:78%;height:100%;background:var(--blue);border-radius:3px;"></div>
+            </div>
+            <span style="font-size:0.72em;color:var(--text-dim);">Home loan</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:var(--mono);font-size:0.8em;color:var(--red);min-width:60px;">~20%</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="width:100%;height:100%;background:var(--red);border-radius:3px;"></div>
+            </div>
+            <span style="font-size:0.72em;color:var(--text-dim);">Credit card</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:var(--mono);font-size:0.8em;color:var(--green);min-width:60px;">~4.5%</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="width:56%;height:100%;background:var(--green);border-radius:3px;"></div>
+            </div>
+            <span style="font-size:0.72em;color:var(--text-dim);">Savings</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box reveal d4">
+      <div class="chart-header">
+        <span class="chart-title">Cash Rate History (2000 - 2025)</span>
+        <div class="chart-legend">
+          <span><span class="dot" style="background:var(--gold)"></span> Cash rate</span>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="rateChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ YOUR MORTGAGE ============ -->
+<section class="section" id="mortgage">
+  <div class="section-inner">
+    <div class="section-label reveal">03 &mdash; Your Mortgage</div>
+    <h2 class="reveal d1">What a rate change means for you</h2>
+    <p class="section-lead reveal d2">
+      Most Australians feel rate changes through their mortgage. A 0.25% rise sounds tiny, but on a $600,000 loan it adds up fast. Drag the slider to see how different cash rates change your monthly repayments.
+    </p>
+
+    <div class="rate-control reveal d3">
+      <h4>Mortgage Calculator</h4>
+      <div class="rate-slider-row">
+        <span style="font-size:0.8em;color:var(--text-dim);">Cash Rate</span>
+        <input type="range" id="rateSlider" min="0" max="8" step="0.25" value="4.35">
+        <div class="rate-display" id="rateDisplay">4.35%</div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="font-size:0.75em;color:var(--text-dim);">
+          Loan: <span style="color:var(--text-secondary);">$600,000</span>
+        </div>
+        <div style="font-size:0.75em;color:var(--text-dim);">
+          Term: <span style="color:var(--text-secondary);">30 years</span>
+        </div>
+        <div style="font-size:0.75em;color:var(--text-dim);">
+          Bank margin: <span style="color:var(--text-secondary);">+1.85%</span>
+        </div>
+      </div>
+      <div class="mortgage-results">
+        <div class="mortgage-card">
+          <div class="label">Your Rate</div>
+          <div class="value" id="mortRate" style="color:var(--gold);">6.20%</div>
+        </div>
+        <div class="mortgage-card">
+          <div class="label">Monthly Repayment</div>
+          <div class="value" id="mortPayment" style="color:var(--text);">$3,671</div>
+          <div class="change" id="mortChange" style="color:var(--text-dim);">baseline</div>
+        </div>
+        <div class="mortgage-card">
+          <div class="label">Total Interest</div>
+          <div class="value" id="mortTotal" style="color:var(--red);">$721K</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row reveal d4">
+      <div class="stat-cell">
+        <div class="stat-num" style="color:var(--gold);">67%</div>
+        <div class="stat-label">Australians with a mortgage</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" style="color:var(--red);">$621K</div>
+        <div class="stat-label">Average loan size</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" style="color:var(--blue);">1.9M</div>
+        <div class="stat-label">Variable rate borrowers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOUSING ============ -->
+<section class="section" id="housing">
+  <div class="section-inner">
+    <div class="section-label reveal">04 &mdash; Housing</div>
+    <h2 class="reveal d1">Rates go down, prices go up</h2>
+    <p class="section-lead reveal d2">
+      When interest rates fall, people can borrow more. When people can borrow more, they can bid more for houses. That pushes prices up. It works the other way too: rate hikes make borrowing harder, which cools the market. This is why house prices and interest rates tend to move in opposite directions.
+    </p>
+
+    <div class="panel-grid cols-2 reveal d3">
+      <div class="panel">
+        <h3>Median house prices</h3>
+        <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">Australian capital cities, in today's dollars. Hover bars for values.</p>
+        <div class="housing-bars" id="housingBars"></div>
+        <div style="height:28px;"></div>
+      </div>
+      <div class="panel">
+        <h3>The maths</h3>
+        <p style="font-size:0.85em;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">
+          Imagine rates drop from 6% to 4%. On a $3,000/month budget, your borrowing power jumps from $500K to $630K. That's $130K more that gets bid into the market, pushing every price tag higher.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--bg-card);border-radius:8px;">
+            <span style="font-size:0.8em;color:var(--text-dim);">Rate 6% borrowing power</span>
+            <span style="font-family:var(--mono);font-size:0.85em;color:var(--text);">$500K</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--bg-card);border-radius:8px;">
+            <span style="font-size:0.8em;color:var(--text-dim);">Rate 4% borrowing power</span>
+            <span style="font-family:var(--mono);font-size:0.85em;color:var(--green);">$630K</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--gold-dim);border-radius:8px;">
+            <span style="font-size:0.8em;color:var(--gold);">Extra bidding power</span>
+            <span style="font-family:var(--mono);font-size:0.85em;color:var(--gold);">+$130K</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block reveal d4">
+      <blockquote>"In Australia, housing isn't just shelter. It's the main way families build wealth, and the biggest financial decision most people ever make."</blockquote>
+      <cite>Understanding the dynamics of the Australian housing market</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INFLATION ============ -->
+<section class="section" id="inflation">
+  <div class="section-inner">
+    <div class="section-label reveal">05 &mdash; Inflation</div>
+    <h2 class="reveal d1">The 2-3% target</h2>
+    <p class="section-lead reveal d2">
+      Inflation means prices rising over time. A little bit is normal and healthy. Too much means your money buys less every week. Too little means the economy is stuck. The RBA's job is to keep it in a sweet spot: between 2% and 3% per year. When inflation gets too high, they raise rates to cool things down.
+    </p>
+
+    <div class="chart-box reveal d3">
+      <div class="chart-header">
+        <span class="chart-title">CPI Inflation vs Target Band</span>
+        <div class="chart-legend">
+          <span><span class="dot" style="background:var(--red)"></span> CPI</span>
+          <span><span class="dot" style="background:var(--green);opacity:0.4"></span> Target</span>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="inflationChart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel-grid cols-2 reveal d4">
+      <div class="panel">
+        <h3>Why inflation happens</h3>
+        <p>When there's too much money chasing too few things, prices go up. Supply chain problems (like during COVID) also push prices higher because there's less stuff available. Government spending and cheap borrowing can add fuel too.</p>
+      </div>
+      <div class="panel">
+        <h3>How the RBA fights it</h3>
+        <p>Higher interest rates make borrowing expensive, so people spend less. Less spending means less pressure on prices. It's a blunt tool and it takes 12-18 months to fully work, which is why the RBA has to guess what inflation will look like a year from now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BIG PICTURE ============ -->
+<section class="section" id="bigpic">
+  <div class="section-inner">
+    <div class="section-label reveal">06 &mdash; The Big Picture</div>
+    <h2 class="reveal d1">Everything is connected</h2>
+    <p class="section-lead reveal d2">
+      The RBA doesn't just think about interest rates. It's balancing employment, the dollar, trade, household debt, and global markets all at once. Every decision creates ripple effects that take months to play out.
+    </p>
+
+    <div class="panel-grid cols-2 reveal d3">
+      <div class="panel">
+        <div class="panel-icon" style="background:rgba(74,186,138,0.15);color:var(--green);">↑</div>
+        <h3>When rates rise</h3>
+        <p>Borrowing costs more. People spend less. Businesses hire fewer workers. House prices cool off. The dollar strengthens (foreign investors earn more on their AUD savings). Inflation slows down.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-icon" style="background:rgba(224,85,85,0.15);color:var(--red);">↓</div>
+        <h3>When rates fall</h3>
+        <p>Borrowing gets cheaper. People spend more. Businesses expand and hire. House prices heat up. The dollar weakens (less attractive to hold). The economy speeds up, but inflation can creep back.</p>
+      </div>
+    </div>
+
+    <div class="reveal d4">
+      <h3 style="font-family:var(--serif);margin-bottom:16px;">Key moments in RBA history</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-date">1990-91</div>
+          <h4>The recession we had to have</h4>
+          <p>Cash rate hit 17.5%. Mortgage rates above 17%. Unemployment reached 11%. Australia's last full recession before 2020.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2008-09</div>
+          <h4>Global Financial Crisis</h4>
+          <p>RBA slashed rates from 7.25% to 3% in just 7 months. Australia was one of the only developed countries to avoid a recession.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2020</div>
+          <h4>COVID emergency</h4>
+          <p>Rate cut to 0.10%, the lowest in history. Also did quantitative easing (buying bonds) for the first time. The housing market boomed.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2022-23</div>
+          <h4>Fastest hike cycle</h4>
+          <p>Inflation hit 7.8%. The RBA raised rates 13 times in 18 months, from 0.10% to 4.35%. Mortgage holders felt the squeeze immediately.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<div class="footer">
+  <p>Explainer by Hardy Thomas &middot; Built with Claude &middot; Not financial advice</p>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+// ============ REVEAL ============
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ============ TOPBAR NAV HIGHLIGHT ============
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.topbar-nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (s.getBoundingClientRect().top < window.innerHeight * 0.4) {
+      current = s.id;
+    }
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+// ============ CASH RATE HISTORY CHART ============
+const rateData = [
+  // year, rate
+  [2000, 6.00], [2001, 5.00], [2002, 4.75], [2003, 4.75], [2004, 5.25],
+  [2005, 5.50], [2006, 6.00], [2007, 6.50], [2008, 7.25], [2009, 3.00],
+  [2010, 4.50], [2011, 4.75], [2012, 3.50], [2013, 2.50], [2014, 2.50],
+  [2015, 2.00], [2016, 1.50], [2017, 1.50], [2018, 1.50], [2019, 0.75],
+  [2020, 0.10], [2021, 0.10], [2022, 3.10], [2023, 4.35], [2024, 4.35], [2025, 4.35],
+];
+
+function drawRateChart() {
+  const canvas = document.getElementById('rateChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(2, 2);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 16, right: 16, bottom: 28, left: 40 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const maxRate = 8;
+
+  // Grid
+  ctx.strokeStyle = '#25335233';
+  ctx.lineWidth = 0.5;
+  for (let r = 0; r <= maxRate; r += 2) {
+    const y = pad.top + (1 - r / maxRate) * cH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#5c5648';
+    ctx.textAlign = 'right';
+    ctx.fillText(r + '%', pad.left - 6, y + 3);
+  }
+
+  // Year labels
+  ctx.textAlign = 'center';
+  for (let i = 0; i < rateData.length; i += 5) {
+    const x = pad.left + (i / (rateData.length - 1)) * cW;
+    ctx.fillStyle = '#5c5648';
+    ctx.fillText(rateData[i][0], x, H - 6);
+  }
+
+  // Line
+  ctx.beginPath();
+  for (let i = 0; i < rateData.length; i++) {
+    const x = pad.left + (i / (rateData.length - 1)) * cW;
+    const y = pad.top + (1 - rateData[i][1] / maxRate) * cH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#d4a853';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Fill under
+  const lastX = pad.left + cW;
+  const lastY = pad.top + (1 - rateData[rateData.length - 1][1] / maxRate) * cH;
+  ctx.lineTo(lastX, pad.top + cH);
+  ctx.lineTo(pad.left, pad.top + cH);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+  grad.addColorStop(0, 'rgba(212,168,83,0.2)');
+  grad.addColorStop(1, 'rgba(212,168,83,0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Current dot
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#d4a853';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 8, 0, Math.PI * 2);
+  ctx.strokeStyle = '#d4a85344';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+setTimeout(drawRateChart, 200);
+
+// ============ MORTGAGE CALCULATOR ============
+const loanAmount = 600000;
+const loanYears = 30;
+const bankMargin = 1.85;
+const baselineRate = 4.35;
+
+function calcMortgage(cashRate) {
+  const annualRate = (cashRate + bankMargin) / 100;
+  const monthlyRate = annualRate / 12;
+  const n = loanYears * 12;
+
+  if (monthlyRate === 0) return { payment: loanAmount / n, totalInterest: 0, yourRate: bankMargin };
+
+  const payment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+  const totalInterest = payment * n - loanAmount;
+
+  return { payment, totalInterest, yourRate: cashRate + bankMargin };
+}
+
+const baselineMortgage = calcMortgage(baselineRate);
+
+function updateMortgage() {
+  const rate = parseFloat(document.getElementById('rateSlider').value);
+  document.getElementById('rateDisplay').textContent = rate.toFixed(2) + '%';
+
+  const m = calcMortgage(rate);
+
+  document.getElementById('mortRate').textContent = m.yourRate.toFixed(2) + '%';
+  document.getElementById('mortPayment').textContent = '$' + Math.round(m.payment).toLocaleString();
+
+  const diff = Math.round(m.payment - baselineMortgage.payment);
+  const changeEl = document.getElementById('mortChange');
+  if (diff === 0) {
+    changeEl.textContent = 'current';
+    changeEl.style.color = 'var(--text-dim)';
+  } else if (diff > 0) {
+    changeEl.textContent = '+$' + diff.toLocaleString() + '/mo';
+    changeEl.style.color = 'var(--red)';
+  } else {
+    changeEl.textContent = '-$' + Math.abs(diff).toLocaleString() + '/mo';
+    changeEl.style.color = 'var(--green)';
+  }
+
+  const totalK = Math.round(m.totalInterest / 1000);
+  document.getElementById('mortTotal').textContent = '$' + totalK + 'K';
+
+  // Update gauge
+  updateGauge(rate);
+}
+
+function updateGauge(rate) {
+  const pct = rate / 8;
+  const dashOffset = 283 * (1 - pct);
+  document.getElementById('gaugeArc').setAttribute('stroke-dashoffset', dashOffset);
+
+  // Needle rotation: -90 (0%) to +90 (100%)
+  const angle = -90 + pct * 180;
+  document.getElementById('gaugeNeedle').setAttribute('transform', `rotate(${angle}, 120, 130)`);
+
+  document.getElementById('gaugeVal').textContent = rate.toFixed(2) + '%';
+  document.getElementById('heroRate').textContent = rate.toFixed(2) + '%';
+}
+
+document.getElementById('rateSlider').addEventListener('input', updateMortgage);
+updateMortgage();
+
+// ============ HOUSING BARS ============
+const housingData = [
+  { year: '2000', price: 280, color: '#5b8fd4' },
+  { year: '2005', price: 420, color: '#5b8fd4' },
+  { year: '2010', price: 520, color: '#5b8fd4' },
+  { year: '2015', price: 680, color: '#5b8fd4' },
+  { year: '2017', price: 790, color: '#d4a853' },
+  { year: '2019', price: 750, color: '#5b8fd4' },
+  { year: '2020', price: 730, color: '#5b8fd4' },
+  { year: '2021', price: 920, color: '#d4a853' },
+  { year: '2022', price: 1050, color: '#d4a853' },
+  { year: '2023', price: 960, color: '#e05555' },
+  { year: '2024', price: 1020, color: '#d4a853' },
+  { year: '2025', price: 1080, color: '#d4a853' },
+];
+
+function renderHousingBars() {
+  const container = document.getElementById('housingBars');
+  const maxPrice = Math.max(...housingData.map(d => d.price));
+
+  container.innerHTML = '';
+  for (const d of housingData) {
+    const h = (d.price / maxPrice) * 160;
+    const bar = document.createElement('div');
+    bar.className = 'housing-bar';
+    bar.style.height = h + 'px';
+    bar.style.background = d.color;
+    bar.innerHTML = `
+      <span class="bar-label">${d.year}</span>
+      <span class="bar-val">$${d.price}K</span>
+    `;
+    container.appendChild(bar);
+  }
+}
+renderHousingBars();
+
+// ============ INFLATION CHART ============
+const inflationData = [
+  [2000, 3.0], [2001, 3.1], [2002, 3.0], [2003, 2.8], [2004, 2.3],
+  [2005, 2.7], [2006, 3.5], [2007, 2.3], [2008, 4.4], [2009, 1.8],
+  [2010, 2.8], [2011, 3.3], [2012, 1.8], [2013, 2.4], [2014, 2.5],
+  [2015, 1.5], [2016, 1.3], [2017, 1.9], [2018, 1.8], [2019, 1.8],
+  [2020, 0.9], [2021, 3.5], [2022, 7.8], [2023, 5.5], [2024, 3.5], [2025, 3.2],
+];
+
+function drawInflationChart() {
+  const canvas = document.getElementById('inflationChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(2, 2);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 16, right: 16, bottom: 28, left: 40 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const maxCPI = 9;
+
+  // Target band (2-3%)
+  const bandTop = pad.top + (1 - 3 / maxCPI) * cH;
+  const bandBot = pad.top + (1 - 2 / maxCPI) * cH;
+  ctx.fillStyle = 'rgba(74,186,138,0.08)';
+  ctx.fillRect(pad.left, bandTop, cW, bandBot - bandTop);
+  ctx.strokeStyle = 'rgba(74,186,138,0.25)';
+  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.left, bandTop); ctx.lineTo(pad.left + cW, bandTop); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left, bandBot); ctx.lineTo(pad.left + cW, bandBot); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '8px "Source Sans 3", sans-serif';
+  ctx.fillStyle = '#4aba8a88';
+  ctx.textAlign = 'left';
+  ctx.fillText('3% target', pad.left + 4, bandTop - 4);
+  ctx.fillText('2% target', pad.left + 4, bandBot + 12);
+
+  // Grid
+  ctx.strokeStyle = '#25335233';
+  ctx.lineWidth = 0.5;
+  for (let r = 0; r <= maxCPI; r += 2) {
+    const y = pad.top + (1 - r / maxCPI) * cH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#5c5648';
+    ctx.textAlign = 'right';
+    ctx.fillText(r + '%', pad.left - 6, y + 3);
+  }
+
+  // Year labels
+  ctx.textAlign = 'center';
+  for (let i = 0; i < inflationData.length; i += 5) {
+    const x = pad.left + (i / (inflationData.length - 1)) * cW;
+    ctx.fillStyle = '#5c5648';
+    ctx.fillText(inflationData[i][0], x, H - 6);
+  }
+
+  // Line
+  ctx.beginPath();
+  for (let i = 0; i < inflationData.length; i++) {
+    const x = pad.left + (i / (inflationData.length - 1)) * cW;
+    const y = pad.top + (1 - inflationData[i][1] / maxCPI) * cH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#e05555';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Fill under
+  const n = inflationData.length;
+  ctx.lineTo(pad.left + cW, pad.top + cH);
+  ctx.lineTo(pad.left, pad.top + cH);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+  grad.addColorStop(0, 'rgba(224,85,85,0.15)');
+  grad.addColorStop(1, 'rgba(224,85,85,0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Highlight the COVID spike
+  const spikeIdx = inflationData.findIndex(d => d[0] === 2022);
+  if (spikeIdx >= 0) {
+    const sx = pad.left + (spikeIdx / (inflationData.length - 1)) * cW;
+    const sy = pad.top + (1 - inflationData[spikeIdx][1] / maxCPI) * cH;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#e05555';
+    ctx.fill();
+    ctx.font = '9px "Source Sans 3", sans-serif';
+    ctx.fillStyle = '#e05555';
+    ctx.textAlign = 'center';
+    ctx.fillText('7.8%', sx, sy - 10);
+  }
+}
+
+setTimeout(drawInflationChart, 300);
+
+// ============ RESIZE ============
+window.addEventListener('resize', () => {
+  drawRateChart();
+  drawInflationChart();
+});
+</script>
+
+</body>
+</html>
